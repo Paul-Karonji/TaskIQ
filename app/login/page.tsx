@@ -1,6 +1,7 @@
 // app/login/page.tsx
 import { signIn, auth } from "@/auth"
 import { redirect } from "next/navigation"
+import { Logo } from "@/components/Logo"
 
 export default async function LoginPage() {
   const session = await auth()
@@ -13,11 +14,8 @@ export default async function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="w-full max-w-md space-y-8 rounded-lg bg-white p-8 shadow-xl">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-gray-900">TaskIQ</h1>
-          <p className="mt-2 text-gray-600">
-            Intelligent task management made simple
-          </p>
+        <div className="flex flex-col items-center justify-center">
+          <Logo size="md" showText={true} showTagline={true} />
         </div>
 
         <div className="mt-8">

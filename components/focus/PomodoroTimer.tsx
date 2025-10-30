@@ -227,6 +227,7 @@ export function PomodoroTimer({ onComplete }: PomodoroTimerProps) {
           onClick={reset}
           size="lg"
           variant="outline"
+          className="text-gray-700 hover:text-gray-900"
         >
           <RotateCcw className="h-5 w-5" />
         </Button>
@@ -235,6 +236,7 @@ export function PomodoroTimer({ onComplete }: PomodoroTimerProps) {
           onClick={() => setSoundEnabled(!soundEnabled)}
           size="lg"
           variant="outline"
+          className="text-gray-700 hover:text-gray-900"
         >
           {soundEnabled ? (
             <Volume2 className="h-5 w-5" />
@@ -246,7 +248,7 @@ export function PomodoroTimer({ onComplete }: PomodoroTimerProps) {
         {/* Settings dialog */}
         <Dialog>
           <DialogTrigger asChild>
-            <Button size="lg" variant="outline">
+            <Button size="lg" variant="outline" className="text-gray-700 hover:text-gray-900">
               <Settings className="h-5 w-5" />
             </Button>
           </DialogTrigger>
@@ -259,7 +261,7 @@ export function PomodoroTimer({ onComplete }: PomodoroTimerProps) {
             </DialogHeader>
             <div className="space-y-4 pt-4">
               <div>
-                <Label htmlFor="work-duration">Work Duration (minutes)</Label>
+                <Label htmlFor="work-duration" className="text-white">Work Duration (minutes)</Label>
                 <Input
                   id="work-duration"
                   type="number"
@@ -269,11 +271,11 @@ export function PomodoroTimer({ onComplete }: PomodoroTimerProps) {
                   onChange={(e) =>
                     updateSettings(parseInt(e.target.value) || 25, breakDuration)
                   }
-                  className="bg-gray-700 border-gray-600 text-white"
+                  className="!bg-gray-700 !border-gray-600 !text-white mt-2"
                 />
               </div>
               <div>
-                <Label htmlFor="break-duration">Break Duration (minutes)</Label>
+                <Label htmlFor="break-duration" className="text-white">Break Duration (minutes)</Label>
                 <Input
                   id="break-duration"
                   type="number"
@@ -283,7 +285,7 @@ export function PomodoroTimer({ onComplete }: PomodoroTimerProps) {
                   onChange={(e) =>
                     updateSettings(workDuration, parseInt(e.target.value) || 5)
                   }
-                  className="bg-gray-700 border-gray-600 text-white"
+                  className="!bg-gray-700 !border-gray-600 !text-white mt-2"
                 />
               </div>
             </div>

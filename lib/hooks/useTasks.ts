@@ -196,3 +196,62 @@ export function useToggleTaskComplete() {
     },
   });
 }
+
+// Fetch completed tasks
+export function useCompletedTasks() {
+  return useQuery({
+    queryKey: ['tasks', 'completed'],
+    queryFn: async () => {
+      const res = await fetch('/api/tasks?status=COMPLETED');
+      if (!res.ok) {
+        throw new Error('Failed to fetch completed tasks');
+      }
+      return res.json() as Promise<{ tasks: Task[]; total: number }>;
+    },
+  });
+}
+
+// Fetch HIGH priority tasks for next 7 days
+export function useHighPriorityUpcoming() {
+  return useQuery({
+    queryKey: ['tasks', 'high-priority-upcoming'],
+    queryFn: async () => {
+      const res = await fetch('/api/tasks?priority=HIGH&status=PENDING');
+      if (!res.ok) {
+        throw new Error('Failed to fetch high priority tasks');
+      }
+      const data = await res.json() as { tasks: Task[]; total: number };
+
+      // Filter to next 7 days on client side
+      const sevenDaysFromNow = new Date();
+      sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7);
+      sevenDaysFromNow.setHours(23, 59, 59, 999);
+
+      const filtered = data.tasks.filter((task) => {
+        const dueDate = new Date(task.dueDate);
+        return dueDate <= sevenDaysFromNow;
+      });
+
+      return { tasks: filtered, total: filtered.length };
+    },
+  });
+}
+
+// Fetch next 5 HIGH priority tasks (for priority queue widget)
+export function usePriorityQueue(limit: number = 5) {
+  return useQuery({
+    queryKey: ['tasks', 'priority-queue', limit],
+    queryFn: async () => {
+      const res = await fetch('/api/tasks?priority=HIGH&status=PENDING');
+      if (!res.ok) {
+        throw new Error('Failed to fetch priority queue');
+      }
+      const data = await res.json() as { tasks: Task[]; total: number };
+
+      // Take only the first N tasks (they're already sorted by due date)
+      const limited = data.tasks.slice(0, limit);
+
+      return { tasks: limited, total: data.total };
+    },
+  });
+}

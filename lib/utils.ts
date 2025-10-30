@@ -201,3 +201,28 @@ export function calculateNextRecurringDate(
       throw new Error(`Unknown recurring pattern: ${pattern}`);
   }
 }
+
+/**
+ * Scroll to a task in the DOM and highlight it
+ * @param taskId - The task ID to scroll to
+ */
+export function scrollToTask(taskId: string) {
+  // Find the task element by data attribute
+  const taskElement = document.querySelector(`[data-task-id="${taskId}"]`);
+
+  if (taskElement) {
+    // Scroll to the element with smooth behavior
+    taskElement.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center',
+    });
+
+    // Add a highlight animation
+    taskElement.classList.add('ring-4', 'ring-blue-300', 'ring-opacity-75');
+
+    // Remove the highlight after 2 seconds
+    setTimeout(() => {
+      taskElement.classList.remove('ring-4', 'ring-blue-300', 'ring-opacity-75');
+    }, 2000);
+  }
+}

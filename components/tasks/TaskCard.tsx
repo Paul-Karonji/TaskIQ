@@ -44,6 +44,7 @@ export function TaskCard({ task, onToggleComplete, onEdit, onDelete }: TaskCardP
 
   return (
     <div
+      data-task-id={task.id}
       className={cn(
         'group relative rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all duration-200 hover:shadow-md hover:scale-[1.01]',
         getPriorityColorClass(task.priority),

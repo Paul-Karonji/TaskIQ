@@ -84,6 +84,7 @@ export async function GET(request: NextRequest) {
           },
         },
         orderBy: [
+          { status: 'asc' }, // PENDING first, then COMPLETED, then ARCHIVED
           { dueDate: 'asc' }, // Earliest due date first
           { priority: 'asc' }, // HIGH first (enum order: HIGH=0, MEDIUM=1, LOW=2)
         ],

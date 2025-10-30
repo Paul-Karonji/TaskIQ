@@ -4,6 +4,9 @@ import { useState } from 'react';
 import { TaskList } from './TaskList';
 import { TaskFilters } from './TaskFilters';
 import { QuickAddTask } from './QuickAddTask';
+import { UpcomingHighPrioritySection } from './UpcomingHighPrioritySection';
+import { PriorityQueueWidget } from './PriorityQueueWidget';
+import { CompletedTasksSection } from './CompletedTasksSection';
 import { useTasks, useToggleTaskComplete, useDeleteTask } from '@/lib/hooks/useTasks';
 import { TaskFilters as TaskFiltersType } from '@/types';
 import { toast } from 'sonner';
@@ -12,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { CategoryManager } from '@/components/categories/CategoryManager';
 import { TagManager } from '@/components/tags/TagManager';
 import { NotificationPreferences } from '@/components/notifications/NotificationPreferences';
+import { scrollToTask } from '@/lib/utils';
 import Link from 'next/link';
 
 export function TaskDashboard() {
@@ -19,7 +23,9 @@ export function TaskDashboard() {
   const [showCategoryManager, setShowCategoryManager] = useState(false);
   const [showTagManager, setShowTagManager] = useState(false);
 
-  const { data, isLoading, refetch } = useTasks(filters);
+  // Filter to only show PENDING tasks by default (exclude COMPLETED)
+  const pendingTasksFilter = { ...filters, status: filters.status || 'PENDING' };
+  const { data, isLoading, refetch } = useTasks(pendingTasksFilter);
   const toggleComplete = useToggleTaskComplete();
   const deleteTask = useDeleteTask();
 
@@ -53,16 +59,20 @@ export function TaskDashboard() {
     refetch();
   };
 
+  const handleTaskClick = (taskId: string) => {
+    scrollToTask(taskId);
+  };
+
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Sidebar - Filters */}
-        <aside className="lg:col-span-1">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Left Sidebar - Filters */}
+        <aside className="lg:col-span-3">
           <TaskFilters onFiltersChange={handleFiltersChange} initialFilters={filters} />
         </aside>
 
         {/* Main Content - Tasks */}
-        <div className="lg:col-span-3 space-y-6">
+        <div className="lg:col-span-6 space-y-6">
           {/* Management Buttons */}
           <div className="flex gap-2 flex-wrap">
             <Link href="/focus">
@@ -91,6 +101,11 @@ export function TaskDashboard() {
               Manage Tags
             </Button>
             <NotificationPreferences />
+          </div>
+
+          {/* High Priority Tasks Section */}
+          <div className="animate-fade-in">
+            <UpcomingHighPrioritySection onTaskClick={handleTaskClick} />
           </div>
 
           {/* Quick Add Task */}
@@ -134,7 +149,20 @@ export function TaskDashboard() {
               />
             )}
           </div>
+
+          {/* Completed Tasks Section */}
+          <div className="animate-fade-in">
+            <CompletedTasksSection
+              onToggleComplete={handleToggleComplete}
+              onDelete={handleDelete}
+            />
+          </div>
         </div>
+
+        {/* Right Sidebar - Priority Queue Widget */}
+        <aside className="lg:col-span-3 hidden lg:block">
+          <PriorityQueueWidget limit={5} onTaskClick={handleTaskClick} />
+        </aside>
       </div>
 
       {/* Management Dialogs */}

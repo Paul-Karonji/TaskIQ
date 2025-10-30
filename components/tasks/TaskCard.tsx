@@ -11,6 +11,7 @@ import {
   Trash2,
   Tag as TagIcon,
   Folder,
+  Repeat,
 } from 'lucide-react';
 import {
   cn,
@@ -23,6 +24,7 @@ import {
   isOverdue,
 } from '@/lib/utils';
 import { PRIORITY_LABELS } from '@/types';
+import { CalendarSyncButton } from './CalendarSyncButton';
 
 interface TaskCardProps {
   task: Task;
@@ -104,6 +106,14 @@ export function TaskCard({ task, onToggleComplete, onEdit, onDelete }: TaskCardP
               )}
             </div>
 
+            {/* Recurring Indicator */}
+            {task.isRecurring && task.recurringPattern && (
+              <div className="flex items-center gap-1 text-blue-600 font-medium">
+                <Repeat className="h-4 w-4" />
+                <span className="capitalize">{task.recurringPattern.toLowerCase()}</span>
+              </div>
+            )}
+
             {/* Estimated Time */}
             {task.estimatedTime && (
               <div className="flex items-center gap-1">
@@ -158,6 +168,7 @@ export function TaskCard({ task, onToggleComplete, onEdit, onDelete }: TaskCardP
         {/* Action Buttons (show on hover) */}
         {(isHovered || window.innerWidth < 768) && (
           <div className="flex items-center gap-1">
+            <CalendarSyncButton task={task} size="icon" variant="ghost" />
             {onEdit && (
               <button
                 onClick={() => onEdit(task)}

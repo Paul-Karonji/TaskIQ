@@ -2,8 +2,8 @@
 
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { format, isToday, isTomorrow, isPast, isThisWeek, parseISO } from 'date-fns';
-import { Priority, Status } from '@prisma/client';
+import { format, isToday, isTomorrow, isPast, isThisWeek, parseISO, addDays, addWeeks, addMonths } from 'date-fns';
+import { Priority, Status, RecurringPattern } from '@prisma/client';
 import { PRIORITY_COLORS } from '@/types';
 
 /**
@@ -173,4 +173,31 @@ export function debounce<T extends (...args: any[]) => any>(
     }
     timeout = setTimeout(later, wait);
   };
+}
+
+/**
+ * Calculate the next due date for a recurring task
+ * Handles edge cases like monthly recurring on the 31st
+ */
+export function calculateNextRecurringDate(
+  currentDueDate: Date,
+  pattern: RecurringPattern
+): Date {
+  const baseDate = new Date(currentDueDate);
+
+  switch (pattern) {
+    case 'DAILY':
+      return addDays(baseDate, 1);
+
+    case 'WEEKLY':
+      return addWeeks(baseDate, 1);
+
+    case 'MONTHLY':
+      // addMonths from date-fns handles edge cases automatically
+      // e.g., Jan 31 + 1 month = Feb 28/29 (last day of Feb)
+      return addMonths(baseDate, 1);
+
+    default:
+      throw new Error(`Unknown recurring pattern: ${pattern}`);
+  }
 }

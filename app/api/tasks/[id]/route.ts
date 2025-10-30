@@ -4,6 +4,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
 import { updateTaskSchema, taskIdSchema } from '@/lib/validations/task';
+import { calculateNextRecurringDate } from '@/lib/utils';
+import { Status } from '@prisma/client';
 
 // PATCH /api/tasks/[id] - Update a task
 export async function PATCH(
@@ -81,9 +83,54 @@ export async function PATCH(
       },
     });
 
+    // Generate next recurring instance if task was just completed
+    let nextTask = null;
+    if (
+      task.status === Status.COMPLETED &&
+      task.isRecurring &&
+      task.recurringPattern
+    ) {
+      try {
+        // Calculate next due date
+        const nextDueDate = calculateNextRecurringDate(task.dueDate, task.recurringPattern);
+
+        // Create the next recurring task instance
+        nextTask = await prisma.task.create({
+          data: {
+            title: task.title,
+            description: task.description,
+            dueDate: nextDueDate,
+            dueTime: task.dueTime,
+            priority: task.priority,
+            categoryId: task.categoryId,
+            estimatedTime: task.estimatedTime,
+            isRecurring: true,
+            recurringPattern: task.recurringPattern,
+            userId: task.userId,
+            status: Status.PENDING,
+            // Note: Tags are NOT copied per user preference
+          },
+          include: {
+            category: true,
+            tags: {
+              include: {
+                tag: true,
+              },
+            },
+          },
+        });
+
+        console.log(`Generated next recurring task: ${nextTask.id} for pattern: ${task.recurringPattern}`);
+      } catch (recurringError) {
+        console.error('Failed to generate recurring task:', recurringError);
+        // Don't fail the main update if recurring generation fails
+      }
+    }
+
     return NextResponse.json({
       success: true,
       task,
+      nextTask, // Include the generated next task if any
       message: 'Task updated successfully',
     });
   } catch (error: any) {

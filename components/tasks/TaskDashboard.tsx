@@ -7,10 +7,17 @@ import { QuickAddTask } from './QuickAddTask';
 import { useTasks, useToggleTaskComplete, useDeleteTask } from '@/lib/hooks/useTasks';
 import { TaskFilters as TaskFiltersType } from '@/types';
 import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Folder, Tag, Target } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { CategoryManager } from '@/components/categories/CategoryManager';
+import { TagManager } from '@/components/tags/TagManager';
+import { NotificationPreferences } from '@/components/notifications/NotificationPreferences';
+import Link from 'next/link';
 
 export function TaskDashboard() {
   const [filters, setFilters] = useState<TaskFiltersType>({});
+  const [showCategoryManager, setShowCategoryManager] = useState(false);
+  const [showTagManager, setShowTagManager] = useState(false);
 
   const { data, isLoading, refetch } = useTasks(filters);
   const toggleComplete = useToggleTaskComplete();
@@ -56,6 +63,36 @@ export function TaskDashboard() {
 
         {/* Main Content - Tasks */}
         <div className="lg:col-span-3 space-y-6">
+          {/* Management Buttons */}
+          <div className="flex gap-2 flex-wrap">
+            <Link href="/focus">
+              <Button
+                size="sm"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+              >
+                <Target className="h-4 w-4 mr-2" />
+                Focus Mode
+              </Button>
+            </Link>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowCategoryManager(true)}
+            >
+              <Folder className="h-4 w-4 mr-2" />
+              Manage Categories
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowTagManager(true)}
+            >
+              <Tag className="h-4 w-4 mr-2" />
+              Manage Tags
+            </Button>
+            <NotificationPreferences />
+          </div>
+
           {/* Quick Add Task */}
           <div className="animate-fade-in">
             <QuickAddTask onTaskCreated={handleTaskCreated} />
@@ -99,6 +136,16 @@ export function TaskDashboard() {
           </div>
         </div>
       </div>
+
+      {/* Management Dialogs */}
+      <CategoryManager
+        open={showCategoryManager}
+        onOpenChange={setShowCategoryManager}
+      />
+      <TagManager
+        open={showTagManager}
+        onOpenChange={setShowTagManager}
+      />
     </main>
   );
 }

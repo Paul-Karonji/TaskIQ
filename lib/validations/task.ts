@@ -75,6 +75,7 @@ export const taskQuerySchema = z.object({
   status: z.nativeEnum(Status).optional(),
   priority: z.nativeEnum(Priority).optional(),
   categoryId: z.string().cuid().optional(),
+  tagId: z.string().cuid().optional(), // Filter by single tag
   search: z.string().max(255).optional(),
   date: z.coerce.date().optional(),
   startDate: z.coerce.date().optional(),

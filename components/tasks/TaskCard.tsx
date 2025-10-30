@@ -12,6 +12,7 @@ import {
   Tag as TagIcon,
   Folder,
   Repeat,
+  Archive,
 } from 'lucide-react';
 import {
   cn,
@@ -31,9 +32,10 @@ interface TaskCardProps {
   onToggleComplete?: (taskId: string, completed: boolean) => void;
   onEdit?: (task: Task) => void;
   onDelete?: (taskId: string) => void;
+  onArchive?: (taskId: string) => void;
 }
 
-export function TaskCard({ task, onToggleComplete, onEdit, onDelete }: TaskCardProps) {
+export function TaskCard({ task, onToggleComplete, onEdit, onDelete, onArchive }: TaskCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const isCompleted = task.status === 'COMPLETED';
   const taskIsOverdue = isOverdue(task.dueDate, task.status);
@@ -177,6 +179,15 @@ export function TaskCard({ task, onToggleComplete, onEdit, onDelete }: TaskCardP
                 aria-label={`Edit task "${task.title}"`}
               >
                 <Pencil className="h-4 w-4" />
+              </button>
+            )}
+            {onArchive && task.status !== 'ARCHIVED' && (
+              <button
+                onClick={() => onArchive(task.id)}
+                className="p-2 text-gray-500 hover:text-amber-600 hover:bg-amber-50 rounded transition-colors"
+                aria-label={`Archive task "${task.title}"`}
+              >
+                <Archive className="h-4 w-4" />
               </button>
             )}
             {onDelete && (

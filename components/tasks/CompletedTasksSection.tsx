@@ -9,11 +9,13 @@ import { Button } from '@/components/ui/button';
 interface CompletedTasksSectionProps {
   onToggleComplete?: (id: string, completed: boolean) => void;
   onDelete?: (id: string) => void;
+  onArchive?: (id: string) => void;
 }
 
 export function CompletedTasksSection({
   onToggleComplete,
   onDelete,
+  onArchive,
 }: CompletedTasksSectionProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const { data, isLoading } = useCompletedTasks();
@@ -90,6 +92,7 @@ export function CompletedTasksSection({
                   task={task}
                   onToggleComplete={handleToggleComplete}
                   onDelete={handleDelete}
+                  onArchive={onArchive}
                 />
               ))}
             </div>

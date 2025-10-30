@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
 import { createTaskSchema, taskQuerySchema } from '@/lib/validations/task';
 import { Status, Priority } from '@prisma/client';
+import { createCalendarEvent } from '@/lib/google-calendar';
 
 // GET /api/tasks - Fetch all tasks with optional filters
 export async function GET(request: NextRequest) {
@@ -18,6 +19,7 @@ export async function GET(request: NextRequest) {
       status: searchParams.get('status') || undefined,
       priority: searchParams.get('priority') || undefined,
       categoryId: searchParams.get('categoryId') || undefined,
+      tagId: searchParams.get('tagId') || undefined,
       search: searchParams.get('search') || undefined,
       date: searchParams.get('date') || undefined,
       startDate: searchParams.get('startDate') || undefined,
@@ -44,6 +46,14 @@ export async function GET(request: NextRequest) {
 
     if (validatedQuery.categoryId) {
       where.categoryId = validatedQuery.categoryId;
+    }
+
+    if (validatedQuery.tagId) {
+      where.tags = {
+        some: {
+          tagId: validatedQuery.tagId,
+        },
+      };
     }
 
     if (validatedQuery.search) {
@@ -155,6 +165,30 @@ export async function POST(request: NextRequest) {
         },
       },
     });
+
+    // Attempt to automatically sync to Google Calendar (non-blocking)
+    try {
+      // Check if user has Google account connected
+      const googleAccount = await prisma.account.findFirst({
+        where: {
+          userId,
+          provider: 'google',
+        },
+      });
+
+      if (googleAccount && googleAccount.access_token) {
+        console.log('Auto-syncing new task to Google Calendar:', task.id);
+        await createCalendarEvent(userId, task);
+        console.log('Task successfully synced to Google Calendar');
+      }
+    } catch (calendarError: any) {
+      // Log error but don't fail task creation
+      console.error('Failed to auto-sync task to calendar:', {
+        taskId: task.id,
+        error: calendarError.message,
+      });
+      // Calendar sync failure doesn't prevent task creation
+    }
 
     return NextResponse.json(
       {

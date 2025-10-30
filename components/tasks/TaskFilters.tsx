@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Search, Filter } from 'lucide-react';
+import { Search, Filter, Tag as TagIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -14,6 +14,7 @@ import { TaskFilters as TaskFiltersType } from '@/types';
 import { Priority, Status } from '@prisma/client';
 import { PRIORITY_LABELS, STATUS_LABELS } from '@/types';
 import { debounce } from '@/lib/utils';
+import { useTags } from '@/lib/hooks/useTags';
 
 interface TaskFiltersProps {
   onFiltersChange: (filters: TaskFiltersType) => void;
@@ -24,6 +25,11 @@ export function TaskFilters({ onFiltersChange, initialFilters }: TaskFiltersProp
   const [search, setSearch] = useState(initialFilters?.search || '');
   const [status, setStatus] = useState<Status | 'ALL'>(initialFilters?.status || 'ALL');
   const [priority, setPriority] = useState<Priority | 'ALL'>(initialFilters?.priority || 'ALL');
+  const [tagId, setTagId] = useState<string | undefined>(initialFilters?.tagId);
+
+  // Fetch tags for filtering
+  const { data: tagsData } = useTags();
+  const tags = tagsData?.tags || [];
 
   // Debounced search handler
   useEffect(() => {
@@ -32,11 +38,12 @@ export function TaskFilters({ onFiltersChange, initialFilters }: TaskFiltersProp
         search: search || undefined,
         status: status !== 'ALL' ? status : undefined,
         priority: priority !== 'ALL' ? priority : undefined,
+        tagId: tagId || undefined,
       });
     }, 300);
 
     debouncedUpdate();
-  }, [search, status, priority, onFiltersChange]);
+  }, [search, status, priority, tagId, onFiltersChange]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
@@ -50,12 +57,17 @@ export function TaskFilters({ onFiltersChange, initialFilters }: TaskFiltersProp
     setPriority(value as Priority | 'ALL');
   };
 
-  const hasActiveFilters = search || status !== 'ALL' || priority !== 'ALL';
+  const handleTagChange = (value: string) => {
+    setTagId(value === 'ALL' ? undefined : value);
+  };
+
+  const hasActiveFilters = search || status !== 'ALL' || priority !== 'ALL' || !!tagId;
 
   const handleClearFilters = () => {
     setSearch('');
     setStatus('ALL');
     setPriority('ALL');
+    setTagId(undefined);
   };
 
   return (
@@ -127,6 +139,32 @@ export function TaskFilters({ onFiltersChange, initialFilters }: TaskFiltersProp
             </SelectContent>
           </Select>
         </div>
+
+        {/* Tag Filter */}
+        <div>
+          <label htmlFor="tag" className="block text-sm font-medium text-gray-700 mb-1">
+            Tag
+          </label>
+          <Select value={tagId || 'ALL'} onValueChange={handleTagChange}>
+            <SelectTrigger id="tag">
+              <SelectValue placeholder="All tags" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">All Tags</SelectItem>
+              {tags.map((tag) => (
+                <SelectItem key={tag.id} value={tag.id}>
+                  <div className="flex items-center gap-2">
+                    <div
+                      className="h-3 w-3 rounded-full"
+                      style={{ backgroundColor: tag.color }}
+                    />
+                    {tag.name}
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {/* Active filters summary */}
@@ -148,6 +186,12 @@ export function TaskFilters({ onFiltersChange, initialFilters }: TaskFiltersProp
               <span className="inline-flex items-center gap-1">
                 {(search || status !== 'ALL') && ' • '}
                 Priority: <strong>{PRIORITY_LABELS[priority as Priority]}</strong>
+              </span>
+            )}
+            {tagId && (
+              <span className="inline-flex items-center gap-1">
+                {(search || status !== 'ALL' || priority !== 'ALL') && ' • '}
+                Tag: <strong>{tags.find((t) => t.id === tagId)?.name || 'Unknown'}</strong>
               </span>
             )}
           </p>

@@ -81,6 +81,7 @@ export interface TaskFilters {
   status?: Status | 'ALL';
   priority?: Priority | 'ALL';
   categoryId?: string;
+  tagId?: string;
   search?: string;
   date?: string | Date;
   startDate?: string | Date;

@@ -1,6 +1,8 @@
 {
   "/api/tasks/route": "app/api/tasks/route.js",
-  "/api/categories/route": "app/api/categories/route.js",
   "/api/tags/route": "app/api/tags/route.js",
-  "/page": "app/page.js"
+  "/api/categories/route": "app/api/categories/route.js",
+  "/page": "app/page.js",
+  "/focus/page": "app/focus/page.js",
+  "/archive/page": "app/archive/page.js"
 }

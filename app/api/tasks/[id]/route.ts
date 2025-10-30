@@ -6,6 +6,7 @@ import { requireAuth } from '@/lib/auth';
 import { updateTaskSchema, taskIdSchema } from '@/lib/validations/task';
 import { calculateNextRecurringDate } from '@/lib/utils';
 import { Status } from '@prisma/client';
+import { updateCalendarEvent, deleteCalendarEvent } from '@/lib/google-calendar';
 
 // PATCH /api/tasks/[id] - Update a task
 export async function PATCH(
@@ -82,6 +83,38 @@ export async function PATCH(
         },
       },
     });
+
+    // Attempt to automatically update Google Calendar event (non-blocking)
+    if (task.googleEventId) {
+      try {
+        // If task is completed, delete the calendar event
+        if (task.status === Status.COMPLETED) {
+          console.log('Task completed, deleting calendar event:', task.googleEventId);
+          await deleteCalendarEvent(userId, task.googleEventId);
+
+          // Remove googleEventId from task
+          await prisma.task.update({
+            where: { id },
+            data: { googleEventId: null },
+          });
+
+          console.log('Calendar event deleted successfully');
+        } else {
+          // Task still pending, update the calendar event
+          console.log('Auto-updating calendar event for task:', task.id);
+          await updateCalendarEvent(userId, task.googleEventId, task);
+          console.log('Calendar event updated successfully');
+        }
+      } catch (calendarError: any) {
+        // Log error but don't fail task update
+        console.error('Failed to auto-update calendar event:', {
+          taskId: task.id,
+          eventId: task.googleEventId,
+          error: calendarError.message,
+        });
+        // Calendar update failure doesn't prevent task update
+      }
+    }
 
     // Generate next recurring instance if task was just completed
     let nextTask = null;
@@ -179,6 +212,23 @@ export async function DELETE(
 
     if (existingTask.userId !== userId) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 403 });
+    }
+
+    // Attempt to delete from Google Calendar if synced (non-blocking)
+    if (existingTask.googleEventId) {
+      try {
+        console.log('Deleting calendar event for task:', existingTask.id);
+        await deleteCalendarEvent(userId, existingTask.googleEventId);
+        console.log('Calendar event deleted successfully');
+      } catch (calendarError: any) {
+        // Log error but don't fail task deletion
+        console.error('Failed to delete calendar event:', {
+          taskId: existingTask.id,
+          eventId: existingTask.googleEventId,
+          error: calendarError.message,
+        });
+        // Calendar deletion failure doesn't prevent task deletion
+      }
     }
 
     // Delete task (cascade will handle related records)

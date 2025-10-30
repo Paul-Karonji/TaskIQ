@@ -10,7 +10,7 @@ import { CompletedTasksSection } from './CompletedTasksSection';
 import { useTasks, useToggleTaskComplete, useDeleteTask } from '@/lib/hooks/useTasks';
 import { TaskFilters as TaskFiltersType } from '@/types';
 import { toast } from 'sonner';
-import { Loader2, Folder, Tag, Target } from 'lucide-react';
+import { Loader2, Folder, Tag, Target, Archive } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CategoryManager } from '@/components/categories/CategoryManager';
 import { TagManager } from '@/components/tags/TagManager';
@@ -51,6 +51,29 @@ export function TaskDashboard() {
     }
   };
 
+  const handleArchive = async (taskId: string) => {
+    if (!confirm('Are you sure you want to archive this task?')) {
+      return;
+    }
+
+    try {
+      await toggleComplete.mutateAsync({ id: taskId, completed: false });
+      // Update the task status to ARCHIVED using the update mutation
+      const response = await fetch(`/api/tasks/${taskId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'ARCHIVED' }),
+      });
+
+      if (!response.ok) throw new Error('Failed to archive task');
+
+      toast.success('Task archived successfully');
+      refetch();
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to archive task');
+    }
+  };
+
   const handleFiltersChange = (newFilters: TaskFiltersType) => {
     setFilters(newFilters);
   };
@@ -82,6 +105,12 @@ export function TaskDashboard() {
               >
                 <Target className="h-4 w-4 mr-2" />
                 Focus Mode
+              </Button>
+            </Link>
+            <Link href="/archive">
+              <Button variant="outline" size="sm">
+                <Archive className="h-4 w-4 mr-2" />
+                View Archive
               </Button>
             </Link>
             <Button
@@ -146,6 +175,7 @@ export function TaskDashboard() {
                 tasks={data?.tasks || []}
                 onToggleComplete={handleToggleComplete}
                 onDelete={handleDelete}
+                onArchive={handleArchive}
               />
             )}
           </div>
@@ -155,6 +185,7 @@ export function TaskDashboard() {
             <CompletedTasksSection
               onToggleComplete={handleToggleComplete}
               onDelete={handleDelete}
+              onArchive={handleArchive}
             />
           </div>
         </div>

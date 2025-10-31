@@ -21,9 +21,18 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Bell, Loader2, Mail, Check } from 'lucide-react';
+import { Bell, Loader2, Mail, Check, AlertCircle, CheckCircle2, Send } from 'lucide-react';
 import { toast } from 'sonner';
 import { WeekDay } from '@prisma/client';
+import {
+  isPushSupported,
+  getNotificationPermission,
+  requestNotificationPermission,
+  subscribeToPush,
+  unsubscribeFromPush,
+  getSubscription,
+  subscriptionToJSON,
+} from '@/lib/push';
 
 interface NotificationPreferences {
   id: string;
@@ -59,6 +68,13 @@ export function NotificationPreferences() {
   const [weeklyDay, setWeeklyDay] = useState<WeekDay>(WeekDay.MONDAY);
   const [weeklyTime, setWeeklyTime] = useState('09:00');
 
+  // Push notification state
+  const [pushSupported, setPushSupported] = useState(false);
+  const [pushPermission, setPushPermission] = useState<NotificationPermission>('default');
+  const [pushSubscription, setPushSubscription] = useState<PushSubscription | null>(null);
+  const [pushLoading, setPushLoading] = useState(false);
+  const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || '';
+
   // Fetch preferences
   const { data, isLoading } = useQuery({
     queryKey: ['notificationPreferences'],
@@ -81,6 +97,20 @@ export function NotificationPreferences() {
       setWeeklyTime(data.weeklyEmailTime);
     }
   }, [data]);
+
+  // Check push notification support and status when dialog opens
+  useEffect(() => {
+    if (isOpen) {
+      setPushSupported(isPushSupported());
+      setPushPermission(getNotificationPermission());
+      loadPushSubscription();
+    }
+  }, [isOpen]);
+
+  const loadPushSubscription = async () => {
+    const sub = await getSubscription();
+    setPushSubscription(sub);
+  };
 
   // Update preferences mutation
   const updateMutation = useMutation({
@@ -137,6 +167,110 @@ export function NotificationPreferences() {
 
   const handleTestEmail = () => {
     testEmailMutation.mutate();
+  };
+
+  // Push notification handlers
+  const handleRequestPermission = async () => {
+    try {
+      setPushLoading(true);
+      const perm = await requestNotificationPermission();
+      setPushPermission(perm);
+      if (perm === 'granted') {
+        toast.success('Notification permission granted!');
+      } else {
+        toast.error('Notification permission denied');
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to request permission');
+    } finally {
+      setPushLoading(false);
+    }
+  };
+
+  const handleSubscribePush = async () => {
+    try {
+      setPushLoading(true);
+
+      if (!vapidKey) {
+        toast.error('Push notifications not configured');
+        return;
+      }
+
+      // Subscribe to push
+      const sub = await subscribeToPush(vapidKey);
+      setPushSubscription(sub);
+
+      // Save to database
+      const response = await fetch('/api/notifications/push/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(subscriptionToJSON(sub)),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save subscription');
+      }
+
+      // Update preferences query
+      queryClient.invalidateQueries({ queryKey: ['notificationPreferences'] });
+      toast.success('Push notifications enabled!');
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to enable push notifications');
+    } finally {
+      setPushLoading(false);
+    }
+  };
+
+  const handleUnsubscribePush = async () => {
+    try {
+      setPushLoading(true);
+
+      // Unsubscribe from browser
+      const success = await unsubscribeFromPush();
+
+      if (success) {
+        // Remove from database
+        const response = await fetch('/api/notifications/push/unsubscribe', {
+          method: 'DELETE',
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to remove subscription');
+        }
+
+        setPushSubscription(null);
+        queryClient.invalidateQueries({ queryKey: ['notificationPreferences'] });
+        toast.success('Push notifications disabled');
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to disable push notifications');
+    } finally {
+      setPushLoading(false);
+    }
+  };
+
+  const handleTestPush = async () => {
+    try {
+      setPushLoading(true);
+
+      const response = await fetch('/api/notifications/push/test', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: 'Test from notification settings' }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send test notification');
+      }
+
+      toast.success('Test notification sent! Check your notifications.');
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to send test notification');
+    } finally {
+      setPushLoading(false);
+    }
   };
 
   return (
@@ -239,6 +373,140 @@ export function NotificationPreferences() {
                       value={weeklyTime}
                       onChange={(e) => setWeeklyTime(e.target.value)}
                     />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Push Notifications */}
+            <div className="space-y-4 pb-4 border-b">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label className="text-base font-semibold">
+                    Push Notifications
+                  </Label>
+                  <p className="text-sm text-gray-500">
+                    Get instant browser notifications for task reminders
+                  </p>
+                </div>
+              </div>
+
+              {/* Browser Support Check */}
+              {!pushSupported ? (
+                <div className="bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-lg p-3">
+                  <div className="flex items-start gap-2">
+                    <AlertCircle className="h-4 w-4 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+                    <p className="text-sm text-red-700 dark:text-red-300">
+                      Your browser doesn't support push notifications. Try Chrome, Firefox, or Safari 16.1+
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {/* Permission Status */}
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="text-gray-600 dark:text-gray-400">Permission:</span>
+                    {pushPermission === 'granted' ? (
+                      <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
+                        <CheckCircle2 className="h-4 w-4" />
+                        <span className="font-medium">Granted</span>
+                      </div>
+                    ) : pushPermission === 'denied' ? (
+                      <div className="flex items-center gap-1 text-red-600 dark:text-red-400">
+                        <AlertCircle className="h-4 w-4" />
+                        <span className="font-medium">Denied</span>
+                      </div>
+                    ) : (
+                      <span className="text-gray-500">Not requested</span>
+                    )}
+                  </div>
+
+                  {/* Subscription Status */}
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="text-gray-600 dark:text-gray-400">Status:</span>
+                    {pushSubscription ? (
+                      <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
+                        <CheckCircle2 className="h-4 w-4" />
+                        <span className="font-medium">Active</span>
+                      </div>
+                    ) : (
+                      <span className="text-gray-500">Not subscribed</span>
+                    )}
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="space-y-2">
+                    {pushPermission === 'default' && (
+                      <Button
+                        onClick={handleRequestPermission}
+                        disabled={pushLoading}
+                        size="sm"
+                        variant="outline"
+                        className="w-full"
+                      >
+                        {pushLoading ? (
+                          <Loader2 className="h-3 w-3 mr-2 animate-spin" />
+                        ) : (
+                          <Bell className="h-3 w-3 mr-2" />
+                        )}
+                        Request Permission
+                      </Button>
+                    )}
+
+                    {pushPermission === 'granted' && !pushSubscription && (
+                      <Button
+                        onClick={handleSubscribePush}
+                        disabled={pushLoading}
+                        size="sm"
+                        className="w-full"
+                      >
+                        {pushLoading ? (
+                          <Loader2 className="h-3 w-3 mr-2 animate-spin" />
+                        ) : (
+                          <Bell className="h-3 w-3 mr-2" />
+                        )}
+                        Enable Push Notifications
+                      </Button>
+                    )}
+
+                    {pushSubscription && (
+                      <>
+                        <Button
+                          onClick={handleTestPush}
+                          disabled={pushLoading}
+                          size="sm"
+                          variant="outline"
+                          className="w-full"
+                        >
+                          {pushLoading ? (
+                            <Loader2 className="h-3 w-3 mr-2 animate-spin" />
+                          ) : (
+                            <Send className="h-3 w-3 mr-2" />
+                          )}
+                          Send Test Notification
+                        </Button>
+                        <Button
+                          onClick={handleUnsubscribePush}
+                          disabled={pushLoading}
+                          size="sm"
+                          variant="destructive"
+                          className="w-full"
+                        >
+                          {pushLoading ? (
+                            <Loader2 className="h-3 w-3 mr-2 animate-spin" />
+                          ) : null}
+                          Disable Push Notifications
+                        </Button>
+                      </>
+                    )}
+
+                    {pushPermission === 'denied' && (
+                      <div className="bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
+                        <p className="text-xs text-amber-700 dark:text-amber-300">
+                          You've blocked notifications. To enable them, click the lock icon in your browser's address bar and allow notifications.
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

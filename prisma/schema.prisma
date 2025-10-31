@@ -18,12 +18,13 @@ model User {
   name          String?
   emailVerified DateTime?
   image         String?
-  
+  timezone      String    @default("UTC") // User's timezone for notifications
+
   // Google OAuth
   googleId      String?   @unique
   accessToken   String?   @db.Text
   refreshToken  String?   @db.Text
-  
+
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 

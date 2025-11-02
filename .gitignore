@@ -1,6 +1,35 @@
-node_modules
-# Keep environment variables out of version control
+# Dependency directories
+node_modules/
+
+# Next.js build output
+.next/
+out/
+dist/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
 .env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Temporary files
+.DS_Store
+*.swp
+*.swo
+
+# Claude / AI artifacts
 .claude
-.CLAUDE.md 
-/generated/prisma
+.CLAUDE.md
+
+# Prisma generated files
+/generated/prisma/
+
+# Optional IDE settings
+.vscode/
+.idea/

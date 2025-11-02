@@ -3,17 +3,20 @@
 import { useState } from 'react';
 import { useCompletedTasks, useToggleTaskComplete, useDeleteTask } from '@/lib/hooks/useTasks';
 import { TaskCard } from './TaskCard';
+import { Task } from '@/types';
 import { ChevronDown, ChevronUp, CheckCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface CompletedTasksSectionProps {
   onToggleComplete?: (id: string, completed: boolean) => void;
+  onEdit?: (task: Task) => void;
   onDelete?: (id: string) => void;
   onArchive?: (id: string) => void;
 }
 
 export function CompletedTasksSection({
   onToggleComplete,
+  onEdit,
   onDelete,
   onArchive,
 }: CompletedTasksSectionProps) {
@@ -91,6 +94,7 @@ export function CompletedTasksSection({
                   key={task.id}
                   task={task}
                   onToggleComplete={handleToggleComplete}
+                  onEdit={onEdit}
                   onDelete={handleDelete}
                   onArchive={onArchive}
                 />

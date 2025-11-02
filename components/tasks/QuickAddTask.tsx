@@ -114,7 +114,7 @@ export function QuickAddTask({ onTaskCreated, onSubmit }: QuickAddTaskProps) {
     return (
       <button
         onClick={() => setIsExpanded(true)}
-        className="w-full flex items-center gap-2 px-4 py-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg border-2 border-dashed border-gray-300 hover:border-gray-400 transition-all"
+        className="w-full flex items-center gap-2 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-indigo-400 dark:hover:border-indigo-500 transition-all"
       >
         <Plus className="h-5 w-5" />
         <span className="font-medium">Add a task</span>
@@ -124,37 +124,37 @@ export function QuickAddTask({ onTaskCreated, onSubmit }: QuickAddTaskProps) {
 
   // Expanded form state
   return (
-    <div className="border border-gray-200 rounded-lg p-4 bg-white shadow-sm">
+    <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-4 bg-white dark:bg-slate-800 shadow-card dark:shadow-card-dark transition-colors">
       <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
         {/* Title */}
         <div>
-          <Label htmlFor="title">
-            Title <span className="text-red-500">*</span>
+          <Label htmlFor="title" className="text-slate-700 dark:text-slate-300">
+            Title <span className="text-red-500 dark:text-red-400">*</span>
           </Label>
           <Input
             id="title"
             placeholder="What needs to be done?"
             {...register('title')}
-            className={errors.title ? 'border-red-500' : ''}
+            className={errors.title ? 'border-red-500 dark:border-red-400' : ''}
             autoFocus
           />
           {errors.title && (
-            <p className="text-sm text-red-600 mt-1">{errors.title.message}</p>
+            <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.title.message}</p>
           )}
         </div>
 
         {/* Description */}
         <div>
-          <Label htmlFor="description">Description</Label>
+          <Label htmlFor="description" className="text-slate-700 dark:text-slate-300">Description</Label>
           <Textarea
             id="description"
             placeholder="Add more details..."
             rows={3}
             {...register('description')}
-            className={errors.description ? 'border-red-500' : ''}
+            className={errors.description ? 'border-red-500 dark:border-red-400' : ''}
           />
           {errors.description && (
-            <p className="text-sm text-red-600 mt-1">{errors.description.message}</p>
+            <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.description.message}</p>
           )}
         </div>
 

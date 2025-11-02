@@ -1,23 +1,16 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 import { prisma } from '@/lib/prisma';
 import { Status, Priority } from '@prisma/client';
 import { format, startOfDay, endOfDay, startOfWeek, endOfWeek } from 'date-fns';
 import { PRIORITY_LABELS } from '@/types';
 
-// Create reusable transporter
-const createTransporter = () => {
-  if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
-    throw new Error('Email credentials not configured');
-  }
+// Initialize Resend client
+if (!process.env.RESEND_API_KEY) {
+  throw new Error('RESEND_API_KEY is not configured in environment variables');
+}
 
-  return nodemailer.createTransporter({
-    service: 'gmail',
-    auth: {
-      user: process.env.GMAIL_USER,
-      pass: process.env.GMAIL_APP_PASSWORD,
-    },
-  });
-};
+const resend = new Resend(process.env.RESEND_API_KEY);
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'DueSync <noreply@duesync.com>';
 
 // HTML template for daily email
 function generateDailyEmailHTML(
@@ -87,7 +80,7 @@ function generateDailyEmailHTML(
         <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
           <!-- Header -->
           <div style="background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
-            <h1 style="margin: 0; color: white; font-size: 28px; font-weight: bold;">TaskIQ</h1>
+            <h1 style="margin: 0; color: white; font-size: 28px; font-weight: bold;">DueSync</h1>
             <p style="margin: 10px 0 0; color: rgba(255, 255, 255, 0.9); font-size: 16px;">Your Daily Task Summary</p>
           </div>
 
@@ -133,7 +126,7 @@ function generateDailyEmailHTML(
 
           <!-- Footer -->
           <div style="text-align: center; padding: 20px 0; color: #9CA3AF; font-size: 12px;">
-            <p style="margin: 0 0 8px;">You're receiving this because you enabled daily email summaries in TaskIQ.</p>
+            <p style="margin: 0 0 8px;">You're receiving this because you enabled daily email summaries in DueSync.</p>
             <p style="margin: 0;">
               <a href="${process.env.NEXTAUTH_URL}/settings" style="color: #3B82F6; text-decoration: none;">Update preferences</a>
             </p>
@@ -207,7 +200,7 @@ function generateWeeklyEmailHTML(
         <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
           <!-- Header -->
           <div style="background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
-            <h1 style="margin: 0; color: white; font-size: 28px; font-weight: bold;">TaskIQ</h1>
+            <h1 style="margin: 0; color: white; font-size: 28px; font-weight: bold;">DueSync</h1>
             <p style="margin: 10px 0 0; color: rgba(255, 255, 255, 0.9); font-size: 16px;">Your Weekly Summary</p>
           </div>
 
@@ -268,7 +261,7 @@ function generateWeeklyEmailHTML(
 
           <!-- Footer -->
           <div style="text-align: center; padding: 20px 0; color: #9CA3AF; font-size: 12px;">
-            <p style="margin: 0 0 8px;">You're receiving this because you enabled weekly email summaries in TaskIQ.</p>
+            <p style="margin: 0 0 8px;">You're receiving this because you enabled weekly email summaries in DueSync.</p>
             <p style="margin: 0;">
               <a href="${process.env.NEXTAUTH_URL}/settings" style="color: #8B5CF6; text-decoration: none;">Update preferences</a>
             </p>
@@ -336,10 +329,9 @@ export async function sendDailyTaskEmail(userId: string): Promise<{
       format(today, 'EEEE, MMMM d, yyyy')
     );
 
-    // Send email
-    const transporter = createTransporter();
-    await transporter.sendMail({
-      from: `"TaskIQ" <${process.env.GMAIL_USER}>`,
+    // Send email using Resend
+    await resend.emails.send({
+      from: FROM_EMAIL,
       to: user.email,
       subject: `☀️ Your tasks for ${format(today, 'EEEE, MMM d')} (${tasks.length} task${
         tasks.length !== 1 ? 's' : ''
@@ -445,10 +437,9 @@ export async function sendWeeklyTaskEmail(userId: string): Promise<{
       `${format(weekStart, 'MMM d')} - ${format(weekEnd, 'MMM d, yyyy')}`
     );
 
-    // Send email
-    const transporter = createTransporter();
-    await transporter.sendMail({
-      from: `"TaskIQ" <${process.env.GMAIL_USER}>`,
+    // Send email using Resend
+    await resend.emails.send({
+      from: FROM_EMAIL,
       to: user.email,
       subject: `📊 Your weekly summary: ${stats.completed} tasks completed`,
       html: emailHtml,
@@ -466,8 +457,6 @@ export async function sendWeeklyTaskEmail(userId: string): Promise<{
  * Send test email to verify configuration
  */
 export async function sendTestEmail(userEmail: string, userName?: string): Promise<void> {
-  const transporter = createTransporter();
-
   const testHtml = `
     <!DOCTYPE html>
     <html>
@@ -477,23 +466,23 @@ export async function sendTestEmail(userEmail: string, userName?: string): Promi
       </head>
       <body style="font-family: sans-serif; padding: 20px; background-color: #f3f4f6;">
         <div style="max-width: 600px; margin: 0 auto; background-color: white; padding: 30px; border-radius: 8px;">
-          <h1 style="color: #3b82f6;">TaskIQ Email Test</h1>
+          <h1 style="color: #3b82f6;">DueSync Email Test</h1>
           <p>Hello ${userName || 'there'}! 👋</p>
           <p>This is a test email to confirm that your email notification settings are working correctly.</p>
           <p style="color: #10b981; font-weight: bold;">✅ Email configuration successful!</p>
           <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
           <p style="font-size: 14px; color: #6b7280;">
-            You can now receive daily and weekly task summaries from TaskIQ.
+            You can now receive daily and weekly task summaries from DueSync.
           </p>
         </div>
       </body>
     </html>
   `;
 
-  await transporter.sendMail({
-    from: `"TaskIQ" <${process.env.GMAIL_USER}>`,
+  await resend.emails.send({
+    from: FROM_EMAIL,
     to: userEmail,
-    subject: '✅ TaskIQ Email Test - Configuration Successful',
+    subject: '✅ DueSync Email Test - Configuration Successful',
     html: testHtml,
   });
 

@@ -4,9 +4,11 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { ShieldCheck, FileText, Download, Loader2, ExternalLink } from 'lucide-react';
+import { ShieldCheck, FileText, Download, Loader2, ExternalLink, Trash2, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { signOut } from 'next-auth/react';
 
 interface LegalSectionProps {
   user: {
@@ -17,6 +19,9 @@ interface LegalSectionProps {
 
 export function LegalSection({ user }: LegalSectionProps) {
   const [exporting, setExporting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const router = useRouter();
 
   const handleExportData = async () => {
     try {
@@ -65,9 +70,7 @@ export function LegalSection({ user }: LegalSectionProps) {
           <div className="grid gap-3">
             {/* Privacy Policy */}
             <Link
-              href="https://taskiq.example.com/privacy"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/privacy"
               className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
             >
               <div className="flex items-center gap-3">
@@ -84,9 +87,7 @@ export function LegalSection({ user }: LegalSectionProps) {
 
             {/* Terms of Service */}
             <Link
-              href="https://taskiq.example.com/terms"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/terms"
               className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
             >
               <div className="flex items-center gap-3">
@@ -94,7 +95,24 @@ export function LegalSection({ user }: LegalSectionProps) {
                 <div>
                   <p className="text-sm font-medium text-gray-900">Terms of Service</p>
                   <p className="text-xs text-gray-500">
-                    Rules and guidelines for using TaskIQ
+                    Rules and guidelines for using DueSync
+                  </p>
+                </div>
+              </div>
+              <ExternalLink className="h-4 w-4 text-gray-400" />
+            </Link>
+
+            {/* Security Policy */}
+            <Link
+              href="/security"
+              className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <ShieldCheck className="h-5 w-5 text-gray-400" />
+                <div>
+                  <p className="text-sm font-medium text-gray-900">Security Policy</p>
+                  <p className="text-xs text-gray-500">
+                    How we protect your data and maintain security
                   </p>
                 </div>
               </div>
@@ -130,7 +148,7 @@ export function LegalSection({ user }: LegalSectionProps) {
                 <div>
                   <p className="text-sm font-medium text-gray-900">Google API Disclosure</p>
                   <p className="text-xs text-gray-500">
-                    How TaskIQ uses your Google data
+                    How DueSync uses your Google data
                   </p>
                 </div>
               </div>
@@ -168,7 +186,7 @@ export function LegalSection({ user }: LegalSectionProps) {
             <div>
               <p className="text-sm font-medium text-gray-900 mb-1">Export Your Data</p>
               <p className="text-xs text-gray-500 mb-3">
-                Download all your TaskIQ data in JSON format. This includes your profile, tasks,
+                Download all your DueSync data in JSON format. This includes your profile, tasks,
                 categories, tags, and preferences.
               </p>
             </div>
@@ -210,6 +228,114 @@ export function LegalSection({ user }: LegalSectionProps) {
               </p>
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Delete Account Card */}
+      <Card className="border-red-200 bg-red-50/50">
+        <CardHeader>
+          <div className="flex items-center gap-2 text-red-700">
+            <AlertTriangle className="h-5 w-5" />
+            <CardTitle className="text-red-900">Danger Zone</CardTitle>
+          </div>
+          <CardDescription className="text-red-700">
+            Permanently delete your account and all associated data
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="bg-red-100 border border-red-200 rounded-lg p-4">
+            <p className="text-sm font-medium text-red-900 mb-2">⚠️ This action cannot be undone!</p>
+            <ul className="text-xs text-red-800 space-y-1 list-disc list-inside">
+              <li>All your tasks will be permanently deleted</li>
+              <li>All categories and tags will be removed</li>
+              <li>Your account data will be erased</li>
+              <li>Google Calendar synced events will remain (you'll need to delete them manually)</li>
+              <li>This action takes effect within 30 days</li>
+            </ul>
+          </div>
+
+          {!showDeleteConfirm ? (
+            <Button
+              variant="destructive"
+              onClick={() => setShowDeleteConfirm(true)}
+              className="w-full sm:w-auto"
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Delete My Account
+            </Button>
+          ) : (
+            <div className="space-y-3">
+              <div className="bg-white border border-red-300 rounded-lg p-4">
+                <p className="text-sm font-medium text-red-900 mb-2">
+                  Are you absolutely sure?
+                </p>
+                <p className="text-xs text-red-700 mb-3">
+                  Type <strong>"{user.email}"</strong> below to confirm account deletion:
+                </p>
+                <input
+                  type="text"
+                  id="delete-confirm"
+                  placeholder="Enter your email to confirm"
+                  className="w-full px-3 py-2 text-sm border border-red-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                />
+              </div>
+
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowDeleteConfirm(false)}
+                  disabled={deleting}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={async () => {
+                    const input = document.getElementById('delete-confirm') as HTMLInputElement;
+                    if (input.value !== user.email) {
+                      toast.error('Email does not match. Please type your email exactly as shown.');
+                      return;
+                    }
+
+                    try {
+                      setDeleting(true);
+                      const response = await fetch('/api/user/delete', {
+                        method: 'DELETE',
+                      });
+
+                      if (!response.ok) {
+                        throw new Error('Failed to delete account');
+                      }
+
+                      toast.success('Account deleted. Redirecting...');
+
+                      // Sign out and redirect to home
+                      setTimeout(async () => {
+                        await signOut({ callbackUrl: '/' });
+                      }, 2000);
+                    } catch (error) {
+                      toast.error('Failed to delete account. Please try again or contact support.');
+                      setDeleting(false);
+                      setShowDeleteConfirm(false);
+                    }
+                  }}
+                  disabled={deleting}
+                >
+                  {deleting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Deleting...
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Yes, Delete My Account
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 

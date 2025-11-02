@@ -76,8 +76,9 @@ export function PriorityQueueWidget({ limit = 5, onTaskClick }: PriorityQueueWid
         ) : (
           <div className="space-y-2">
             {tasks.map((task, index) => {
-              const urgencyDot = getUrgencyDot(task.dueDate);
-              const relativeDate = getRelativeDateShort(task.dueDate);
+              const dueDate = new Date(task.dueDate);
+              const urgencyDot = getUrgencyDot(dueDate);
+              const relativeDate = getRelativeDateShort(dueDate);
 
               return (
                 <div

@@ -6,6 +6,7 @@ import { QueryProvider } from "@/components/providers/query-provider"
 import { ThemeProvider } from "@/components/theme/ThemeProvider"
 import { ServiceWorkerProvider } from "@/components/ServiceWorkerProvider"
 import { Toaster } from "sonner"
+import { Analytics } from "@vercel/analytics/react"
 
 const inter = Inter({
   variable: "--font-inter",
@@ -13,7 +14,7 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: "TaskIQ - Smart Task Management",
+  title: "DueSync - Smart Task Synchronization",
   description: "Organize, prioritize, and complete your tasks with ease",
 }
 
@@ -27,8 +28,9 @@ export default function RootLayout({
       <body className={`${inter.variable} antialiased`}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="light"
-          disableTransitionOnChange
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange={false}
         >
           <ServiceWorkerProvider>
             <QueryProvider>
@@ -37,6 +39,7 @@ export default function RootLayout({
             </QueryProvider>
           </ServiceWorkerProvider>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   )

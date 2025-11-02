@@ -7,6 +7,7 @@ import { Archive, Loader2, ChevronLeft, Inbox } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import Link from 'next/link';
+import { Logo } from '@/components/Logo';
 
 export default function ArchivePage() {
   const { data, isLoading, refetch } = useTasks({ status: 'ARCHIVED' });
@@ -46,41 +47,52 @@ export default function ArchivePage() {
   };
 
   return (
-    <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
       {/* Header */}
-      <div className="mb-8">
-        <Link href="/">
-          <Button variant="ghost" size="sm" className="mb-4">
-            <ChevronLeft className="h-4 w-4 mr-2" />
-            Back to Dashboard
-          </Button>
-        </Link>
-
-        <div className="flex items-center gap-4">
-          <div className="rounded-full bg-amber-100 p-4">
-            <Archive className="h-8 w-8 text-amber-600" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Archived Tasks</h1>
-            <p className="text-gray-600 mt-1">
-              {total} {total === 1 ? 'task' : 'tasks'} archived
-            </p>
+      <header className="border-b border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between">
+            <Link href="/">
+              <Logo size="sm" showText={true} showTagline={false} />
+            </Link>
+            <Link href="/">
+              <Button variant="ghost" size="sm">
+                <ChevronLeft className="h-4 w-4 mr-2" />
+                Back to Dashboard
+              </Button>
+            </Link>
           </div>
         </div>
-      </div>
+      </header>
+
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Page Title */}
+        <div className="mb-8">
+          <div className="flex items-center gap-4">
+            <div className="rounded-full bg-amber-100 dark:bg-amber-900 p-4">
+              <Archive className="h-8 w-8 text-amber-600 dark:text-amber-400" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-slate-100">Archived Tasks</h1>
+              <p className="text-gray-600 dark:text-slate-400 mt-1">
+                {total} {total === 1 ? 'task' : 'tasks'} archived
+              </p>
+            </div>
+          </div>
+        </div>
 
       {/* Content */}
       {isLoading ? (
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+          <Loader2 className="h-8 w-8 animate-spin text-gray-400 dark:text-slate-500" />
         </div>
       ) : tasks.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 px-4 bg-white border border-gray-200 rounded-lg">
-          <div className="rounded-full bg-gray-100 p-6 mb-4">
-            <Inbox className="h-12 w-12 text-gray-400" />
+        <div className="flex flex-col items-center justify-center py-16 px-4 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg">
+          <div className="rounded-full bg-gray-100 dark:bg-slate-700 p-6 mb-4">
+            <Inbox className="h-12 w-12 text-gray-400 dark:text-slate-500" />
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">No archived tasks</h3>
-          <p className="text-sm text-gray-500 text-center max-w-sm">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-slate-100 mb-2">No archived tasks</h3>
+          <p className="text-sm text-gray-500 dark:text-slate-400 text-center max-w-sm">
             Tasks you archive will appear here for future reference.
           </p>
         </div>
@@ -96,7 +108,7 @@ export default function ArchivePage() {
                   size="sm"
                   variant="outline"
                   onClick={() => handleUnarchive(task.id)}
-                  className="bg-white hover:bg-green-50 hover:border-green-500 hover:text-green-700"
+                  className="bg-white dark:bg-slate-800 hover:bg-green-50 dark:hover:bg-green-900/20 hover:border-green-500 dark:hover:border-green-600 hover:text-green-700 dark:hover:text-green-400"
                 >
                   Restore
                 </Button>
@@ -106,15 +118,16 @@ export default function ArchivePage() {
         </div>
       )}
 
-      {/* Info footer */}
-      {tasks.length > 0 && (
-        <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <p className="text-sm text-blue-800">
-            <strong>Tip:</strong> Click &quot;Restore&quot; to move a task back to your active
-            tasks, or delete it permanently.
-          </p>
-        </div>
-      )}
-    </main>
+        {/* Info footer */}
+        {tasks.length > 0 && (
+          <div className="mt-8 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+            <p className="text-sm text-blue-800 dark:text-blue-300">
+              <strong>Tip:</strong> Click &quot;Restore&quot; to move a task back to your active
+              tasks, or delete it permanently.
+            </p>
+          </div>
+        )}
+      </main>
+    </div>
   );
 }

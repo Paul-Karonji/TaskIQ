@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     const userId = session.user.id;
 
     const body = await request.json().catch(() => ({}));
-    const customMessage = body.message || 'This is a test push notification from TaskIQ!';
+    const customMessage = body.message || 'This is a test push notification from DueSync!';
 
     // Get user's push subscription
     const preference = await prisma.notificationPreference.findUnique({
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
 
     // Prepare notification payload
     const payload = JSON.stringify({
-      title: 'TaskIQ Test Notification 🔔',
+      title: 'DueSync Test Notification 🔔',
       body: customMessage,
       taskId: 'test-task-123',
       priority: 'HIGH',

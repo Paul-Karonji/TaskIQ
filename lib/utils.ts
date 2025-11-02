@@ -62,37 +62,37 @@ export function getPriorityColor(priority: Priority): string {
 }
 
 /**
- * Get priority color class for Tailwind
+ * Get priority color class for Tailwind (with dark mode support)
  */
 export function getPriorityColorClass(priority: Priority): string {
   const colorMap = {
-    HIGH: 'border-red-500',
-    MEDIUM: 'border-amber-500',
-    LOW: 'border-green-500',
+    HIGH: 'border-l-red-500 dark:border-l-red-400',
+    MEDIUM: 'border-l-amber-500 dark:border-l-amber-400',
+    LOW: 'border-l-emerald-500 dark:border-l-emerald-400',
   };
   return colorMap[priority];
 }
 
 /**
- * Get priority text color class for Tailwind
+ * Get priority text color class for Tailwind (with dark mode support)
  */
 export function getPriorityTextClass(priority: Priority): string {
   const colorMap = {
-    HIGH: 'text-red-600',
-    MEDIUM: 'text-amber-600',
-    LOW: 'text-green-600',
+    HIGH: 'text-red-700 dark:text-red-300',
+    MEDIUM: 'text-amber-700 dark:text-amber-300',
+    LOW: 'text-emerald-700 dark:text-emerald-300',
   };
   return colorMap[priority];
 }
 
 /**
- * Get priority background color class for Tailwind
+ * Get priority background color class for Tailwind (with dark mode support)
  */
 export function getPriorityBgClass(priority: Priority): string {
   const colorMap = {
-    HIGH: 'bg-red-50',
-    MEDIUM: 'bg-amber-50',
-    LOW: 'bg-green-50',
+    HIGH: 'bg-red-100 dark:bg-red-900/30',
+    MEDIUM: 'bg-amber-100 dark:bg-amber-900/30',
+    LOW: 'bg-emerald-100 dark:bg-emerald-900/30',
   };
   return colorMap[priority];
 }
@@ -218,11 +218,11 @@ export function scrollToTask(taskId: string) {
     });
 
     // Add a highlight animation
-    taskElement.classList.add('ring-4', 'ring-blue-300', 'ring-opacity-75');
+    taskElement.classList.add('ring-4', 'ring-indigo-300', 'dark:ring-indigo-500', 'ring-opacity-75');
 
     // Remove the highlight after 2 seconds
     setTimeout(() => {
-      taskElement.classList.remove('ring-4', 'ring-blue-300', 'ring-opacity-75');
+      taskElement.classList.remove('ring-4', 'ring-indigo-300', 'dark:ring-indigo-500', 'ring-opacity-75');
     }, 2000);
   }
 }

@@ -1,6 +1,6 @@
 # Push Notifications - Complete Guide
 
-> Comprehensive documentation for TaskIQ's Web Push Notification system
+> Comprehensive documentation for DueSync's Web Push Notification system
 
 ## Table of Contents
 
@@ -21,7 +21,7 @@
 
 ## Overview
 
-TaskIQ implements **Web Push Notifications** using the Push API and Service Workers to deliver real-time task reminders directly to users' browsers, even when the app is not open.
+DueSync implements **Web Push Notifications** using the Push API and Service Workers to deliver real-time task reminders directly to users' browsers, even when the app is not open.
 
 ### Key Features
 
@@ -47,7 +47,7 @@ TaskIQ implements **Web Push Notifications** using the Push API and Service Work
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    TaskIQ Push System                        │
+│                    DueSync Push System                        │
 ├─────────────────────────────────────────────────────────────┤
 │                                                               │
 │  ┌──────────────┐      ┌──────────────┐      ┌───────────┐ │
@@ -407,7 +407,7 @@ const result = await sendPushToMultipleUsers(
   ['user-1', 'user-2', 'user-3'],
   {
     title: 'System Update',
-    body: 'TaskIQ has been updated with new features!',
+    body: 'DueSync has been updated with new features!',
   }
 );
 

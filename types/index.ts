@@ -61,6 +61,18 @@ export interface User {
   updatedAt: Date | string;
 }
 
+// Onboarding types
+export interface OnboardingStatus {
+  hasCompletedOnboarding: boolean;
+  onboardingCompletedAt?: Date | string | null;
+  onboardingSkipped: boolean;
+}
+
+export interface OnboardingUpdateInput {
+  hasCompletedOnboarding?: boolean;
+  onboardingSkipped?: boolean;
+}
+
 // API Response types
 export interface ApiResponse<T = any> {
   success: boolean;

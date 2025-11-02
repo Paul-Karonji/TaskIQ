@@ -114,8 +114,9 @@ export function UpcomingHighPrioritySection({ onTaskClick }: UpcomingHighPriorit
       {/* Task Cards */}
       <div className="p-4 space-y-3">
         {tasks.map((task) => {
-          const urgencyStyle = getUrgencyStyle(task.dueDate);
-          const relativeDate = getRelativeDateLabel(task.dueDate);
+          const dueDate = new Date(task.dueDate);
+          const urgencyStyle = getUrgencyStyle(dueDate);
+          const relativeDate = getRelativeDateLabel(dueDate);
 
           return (
             <div

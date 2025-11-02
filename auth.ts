@@ -24,11 +24,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async session({ session, user }) {
       if (session.user) {
         session.user.id = user.id
-        
+
         const account = await prisma.account.findFirst({
           where: { userId: user.id, provider: 'google' }
         })
-        
+
         if (account) {
           // @ts-ignore
           session.accessToken = account.access_token
@@ -48,4 +48,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   session: {
     strategy: "database",
   },
+  // Required for NextAuth v5 in development
+  trustHost: true,
 })

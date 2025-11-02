@@ -7,12 +7,14 @@ interface LogoProps {
   size?: "sm" | "md" | "lg"
   showText?: boolean
   showTagline?: boolean
+  theme?: "light" | "dark"
 }
 
 export function Logo({
   size = "md",
   showText = true,
-  showTagline = false
+  showTagline = false,
+  theme = "light"
 }: LogoProps) {
   const sizes = {
     sm: { icon: 40, text: 22, tagline: 8 },
@@ -25,7 +27,7 @@ export function Logo({
   const taglineSize = sizes[size].tagline
 
   return (
-    <div className="flex items-center gap-6">
+    <div className="flex items-center gap-6" suppressHydrationWarning>
       {/* Neural Icon */}
       <div
         className="relative"
@@ -34,6 +36,7 @@ export function Logo({
           height: `${iconSize}px`,
           filter: "drop-shadow(0 4px 12px rgba(59, 130, 246, 0.2))"
         }}
+        suppressHydrationWarning
       >
         <style jsx>{`
           @keyframes pulse {
@@ -72,7 +75,7 @@ export function Logo({
           .nc-6 { animation-delay: 2.5s; }
         `}</style>
 
-        <div className="neural-icon">
+        <div className="neural-icon" suppressHydrationWarning>
           {/* Connections */}
           <div
             className="neural-connection nc-1 absolute rounded-sm"
@@ -228,7 +231,7 @@ export function Logo({
               lineHeight: 1
             }}
           >
-            <span className="text-gray-900">Task</span>
+            <span className={theme === "dark" ? "text-white" : "text-gray-900"}>Due</span>
             <span
               className="bg-gradient-to-br from-blue-500 to-purple-600"
               style={{
@@ -237,18 +240,18 @@ export function Logo({
                 backgroundClip: "text"
               }}
             >
-              IQ
+              Sync
             </span>
           </div>
           {showTagline && (
             <div
-              className="text-gray-500 font-semibold mt-1.5"
+              className={`${theme === "dark" ? "text-gray-300" : "text-gray-500"} font-semibold mt-1.5`}
               style={{
                 fontSize: `${taglineSize}px`,
                 letterSpacing: "1.8px"
               }}
             >
-              SMART TASK MANAGEMENT
+              SMART TASK SYNCHRONIZATION
             </div>
           )}
         </div>

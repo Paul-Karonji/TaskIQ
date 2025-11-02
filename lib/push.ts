@@ -99,7 +99,7 @@ export async function subscribeToPush(
     const applicationServerKey = urlBase64ToUint8Array(vapidPublicKey);
     subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
-      applicationServerKey,
+      applicationServerKey: applicationServerKey as BufferSource,
     });
 
     console.log('[Push] Successfully subscribed to push notifications');

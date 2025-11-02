@@ -8,53 +8,48 @@ import { useEffect, useState } from 'react';
 /**
  * ThemeToggle Component
  *
- * NOTE: Dark mode is currently DISABLED app-wide (October 2025)
- *
- * Reason: Only ~30% of components have proper dark mode styling.
- * Most components use hardcoded light colors causing text visibility issues.
- *
- * Status: Theme infrastructure is complete, but component library needs work.
- *
- * To re-enable dark mode:
- * 1. Add dark: variants to all components in components/ui/
- * 2. Add dark: variants to all components in components/tasks/
- * 3. Update TaskCard, TaskDashboard, QuickAddTask (most critical)
- * 4. Test thoroughly in both themes
- * 5. Restore ThemeToggle to app/page.tsx
- * 6. Change ThemeProvider defaultTheme back to "system" with enableSystem
- *
- * Estimated effort: 17-23 hours
- * See: docs/DARK_MODE_IMPLEMENTATION.md (when created)
+ * Modern Minimal Theme Toggle
+ * Switches between light and dark modes with smooth transitions.
+ * Follows WCAG 2.1 AA accessibility standards.
  */
 export function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, systemTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  // useEffect only runs on the client, so now we can safely show the UI
+  // Prevent hydration mismatch by waiting for client-side mount
   useEffect(() => {
     setMounted(true);
   }, []);
 
   if (!mounted) {
     return (
-      <Button variant="ghost" size="icon" disabled>
-        <Sun className="h-5 w-5" />
+      <Button
+        variant="ghost"
+        size="icon"
+        disabled
+        className="h-9 w-9"
+        aria-label="Loading theme toggle"
+      >
+        <Sun className="h-[1.2rem] w-[1.2rem]" />
       </Button>
     );
   }
+
+  const currentTheme = theme === 'system' ? systemTheme : theme;
+  const isDark = currentTheme === 'dark';
 
   return (
     <Button
       variant="ghost"
       size="icon"
-      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-      aria-label="Toggle theme"
+      onClick={() => setTheme(isDark ? 'light' : 'dark')}
+      className="h-9 w-9 relative transition-colors hover:bg-slate-100 dark:hover:bg-slate-800"
+      aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
+      title={`Current: ${isDark ? 'Dark' : 'Light'} mode`}
     >
-      {theme === 'dark' ? (
-        <Sun className="h-5 w-5 text-gray-300 hover:text-white transition-colors" />
-      ) : (
-        <Moon className="h-5 w-5 text-gray-600 hover:text-gray-900 transition-colors" />
-      )}
+      <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 text-slate-700" />
+      <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 text-slate-100" />
+      <span className="sr-only">Toggle theme</span>
     </Button>
   );
 }

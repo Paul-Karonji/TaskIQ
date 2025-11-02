@@ -19,7 +19,7 @@ export function FocusModeView() {
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
             <Loader2 className="h-12 w-12 animate-spin mx-auto mb-4 text-blue-500" />
-            <p className="text-gray-400">Loading your tasks...</p>
+            <p className="text-gray-200">Loading your tasks...</p>
           </div>
         </div>
       </div>
@@ -38,7 +38,7 @@ export function FocusModeView() {
               <CalendarCheck className="h-12 w-12 text-green-400" />
             </div>
             <h2 className="text-3xl font-bold mb-4">All Done!</h2>
-            <p className="text-gray-400 text-lg mb-6">
+            <p className="text-gray-200 text-lg mb-6">
               You have no pending tasks for today. Great work!
             </p>
             <Button
@@ -94,7 +94,7 @@ export function FocusModeView() {
             <Target className="h-5 w-5 text-blue-400" />
             <span className="text-blue-400 font-medium">Focus Mode</span>
           </div>
-          <p className="text-gray-400">
+          <p className="text-gray-200">
             Task {currentIndex + 1} of {pendingTasks.length}
           </p>
         </div>
@@ -115,7 +115,7 @@ export function FocusModeView() {
 
             {/* Due time */}
             {currentTask.dueTime && (
-              <span className="text-gray-400 text-sm">
+              <span className="text-gray-200 text-sm">
                 Due at {currentTask.dueTime}
               </span>
             )}
@@ -128,7 +128,7 @@ export function FocusModeView() {
 
           {/* Task description */}
           {currentTask.description && (
-            <p className="text-gray-300 text-lg mb-6 leading-relaxed">
+            <p className="text-gray-100 text-lg mb-6 leading-relaxed">
               {currentTask.description}
             </p>
           )}
@@ -140,7 +140,7 @@ export function FocusModeView() {
                 className="h-3 w-3 rounded-full"
                 style={{ backgroundColor: currentTask.category.color }}
               />
-              <span className="text-gray-400 text-sm">
+              <span className="text-gray-200 text-sm">
                 {currentTask.category.name}
               </span>
             </div>
@@ -148,7 +148,7 @@ export function FocusModeView() {
 
           {/* Estimated time */}
           {currentTask.estimatedTime && (
-            <p className="text-gray-400 text-sm mb-8">
+            <p className="text-gray-200 text-sm mb-8">
               Estimated time: {currentTask.estimatedTime} minutes
             </p>
           )}
@@ -220,7 +220,7 @@ export function FocusModeView() {
         </div>
 
         {/* Tips */}
-        <div className="mt-8 text-center text-gray-500 text-sm">
+        <div className="mt-8 text-center text-gray-300 text-sm">
           <p>💡 Tip: Use the Pomodoro timer to stay focused. Take breaks between tasks!</p>
         </div>
       </div>

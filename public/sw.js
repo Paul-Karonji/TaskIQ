@@ -1,4 +1,4 @@
-// Service Worker for TaskIQ
+// Service Worker for DueSync
 // Handles push notifications and offline caching
 
 const CACHE_NAME = 'taskiq-v1';
@@ -40,12 +40,12 @@ self.addEventListener('push', (event) => {
   } catch (error) {
     console.error('[Service Worker] Error parsing push data:', error);
     data = {
-      title: 'TaskIQ Reminder',
+      title: 'DueSync Reminder',
       body: event.data.text(),
     };
   }
 
-  const title = data.title || 'TaskIQ Reminder';
+  const title = data.title || 'DueSync Reminder';
   const options = {
     body: data.body || 'You have a task reminder',
     icon: '/icon-192.png',

@@ -15,8 +15,9 @@ import {
 } from '@/components/ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
-import { User, Mail, Calendar, Globe, Loader2 } from 'lucide-react';
+import { User, Mail, Calendar, Globe, Loader2, PlayCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import { useOnboarding } from '@/lib/hooks/useOnboarding';
 
 interface ProfileSectionProps {
   user: {
@@ -129,6 +130,7 @@ export function ProfileSection({ user }: ProfileSectionProps) {
   const [name, setName] = useState(user.name || '');
   const [timezone, setTimezone] = useState(user.timezone);
   const queryClient = useQueryClient();
+  const { resetOnboarding, isResettingOnboarding } = useOnboarding();
 
   const updateProfileMutation = useMutation({
     mutationFn: async (data: { name: string; timezone: string }) => {
@@ -188,13 +190,13 @@ export function ProfileSection({ user }: ProfileSectionProps) {
         <div className="flex items-center gap-4">
           <Avatar className="h-20 w-20">
             <AvatarImage src={user.image || undefined} alt={name || 'User'} />
-            <AvatarFallback className="text-lg font-semibold bg-blue-100 text-blue-700">
+            <AvatarFallback className="text-lg font-semibold bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300">
               {initials}
             </AvatarFallback>
           </Avatar>
           <div>
-            <p className="text-sm font-medium text-gray-900">Profile Picture</p>
-            <p className="text-xs text-gray-500">
+            <p className="text-sm font-medium text-gray-900 dark:text-slate-100">Profile Picture</p>
+            <p className="text-xs text-gray-500 dark:text-slate-400">
               Managed by your Google account
             </p>
           </div>
@@ -215,7 +217,7 @@ export function ProfileSection({ user }: ProfileSectionProps) {
             placeholder="Enter your name"
             className="max-w-md"
           />
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-gray-500 dark:text-slate-400">
             This is your public display name in the application
           </p>
         </div>
@@ -230,10 +232,10 @@ export function ProfileSection({ user }: ProfileSectionProps) {
             <Input
               value={user.email}
               disabled
-              className="max-w-md bg-gray-50 text-gray-600"
+              className="max-w-md bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-slate-400"
             />
           </div>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-gray-500 dark:text-slate-400">
             Email is managed by your Google account and cannot be changed
           </p>
         </div>
@@ -256,7 +258,7 @@ export function ProfileSection({ user }: ProfileSectionProps) {
               ))}
             </SelectContent>
           </Select>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-gray-500 dark:text-slate-400">
             Your timezone is used for scheduling notifications and displaying due dates
           </p>
         </div>
@@ -267,13 +269,44 @@ export function ProfileSection({ user }: ProfileSectionProps) {
             <Calendar className="h-4 w-4" />
             Member Since
           </Label>
-          <p className="text-sm text-gray-700">
+          <p className="text-sm text-gray-700 dark:text-slate-300">
             {new Date(user.createdAt).toLocaleDateString('en-US', {
               year: 'numeric',
               month: 'long',
               day: 'numeric',
             })}
           </p>
+        </div>
+
+        <Separator />
+
+        {/* Resume Welcome Tour */}
+        <div className="space-y-2">
+          <Label className="flex items-center gap-2">
+            <PlayCircle className="h-4 w-4" />
+            Welcome Tour
+          </Label>
+          <p className="text-sm text-gray-500 dark:text-slate-400 mb-3">
+            Want to see the welcome tour again? Restart it to learn about DueSync's features.
+          </p>
+          <Button
+            variant="outline"
+            onClick={resetOnboarding}
+            disabled={isResettingOnboarding}
+            className="w-full sm:w-auto"
+          >
+            {isResettingOnboarding ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Restarting...
+              </>
+            ) : (
+              <>
+                <PlayCircle className="h-4 w-4 mr-2" />
+                Resume Welcome Tour
+              </>
+            )}
+          </Button>
         </div>
 
         <Separator />

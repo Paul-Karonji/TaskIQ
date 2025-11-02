@@ -127,7 +127,7 @@ export function AccountsSection({ user, googleAccount }: AccountsSectionProps) {
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
               <p className="text-xs text-amber-800">
                 <strong>Note:</strong> To disconnect your Google account, you must sign out and
-                revoke TaskIQ's access in your Google account settings.
+                revoke DueSync's access in your Google account settings.
               </p>
             </div>
           </div>

@@ -48,9 +48,10 @@ export function TaskCard({ task, onToggleComplete, onEdit, onDelete, onArchive }
     <div
       data-task-id={task.id}
       className={cn(
-        'group relative rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all duration-200 hover:shadow-md hover:scale-[1.01]',
-        getPriorityColorClass(task.priority),
+        'group relative rounded-lg border bg-white dark:bg-slate-800 p-4 shadow-card dark:shadow-card-dark transition-all duration-200 hover:shadow-card-hover dark:hover:shadow-card-hover-dark hover:scale-[1.01]',
         'border-l-4',
+        getPriorityColorClass(task.priority),
+        'border-t border-r border-b border-slate-200 dark:border-slate-700',
         isCompleted && 'opacity-60'
       )}
       onMouseEnter={() => setIsHovered(true)}
@@ -70,8 +71,8 @@ export function TaskCard({ task, onToggleComplete, onEdit, onDelete, onArchive }
           {/* Title */}
           <h3
             className={cn(
-              'text-base font-semibold text-gray-900 mb-1',
-              isCompleted && 'line-through text-gray-500'
+              'text-base font-semibold text-slate-800 dark:text-slate-100 mb-1',
+              isCompleted && 'line-through text-slate-500 dark:text-slate-400'
             )}
           >
             {task.title}
@@ -81,8 +82,8 @@ export function TaskCard({ task, onToggleComplete, onEdit, onDelete, onArchive }
           {task.description && (
             <p
               className={cn(
-                'text-sm text-gray-600 mb-2 line-clamp-2',
-                isCompleted && 'text-gray-400'
+                'text-sm text-slate-600 dark:text-slate-400 mb-2 line-clamp-2',
+                isCompleted && 'text-slate-400 dark:text-slate-500'
               )}
             >
               {task.description}
@@ -90,12 +91,12 @@ export function TaskCard({ task, onToggleComplete, onEdit, onDelete, onArchive }
           )}
 
           {/* Meta information */}
-          <div className="flex flex-wrap items-center gap-3 text-sm text-gray-500">
+          <div className="flex flex-wrap items-center gap-3 text-sm text-slate-500 dark:text-slate-400">
             {/* Due Date */}
             <div
               className={cn(
                 'flex items-center gap-1',
-                taskIsOverdue && 'text-red-600 font-medium'
+                taskIsOverdue && 'text-red-500 dark:text-red-400 font-medium'
               )}
             >
               <Calendar className="h-4 w-4" />
@@ -111,7 +112,7 @@ export function TaskCard({ task, onToggleComplete, onEdit, onDelete, onArchive }
 
             {/* Recurring Indicator */}
             {task.isRecurring && task.recurringPattern && (
-              <div className="flex items-center gap-1 text-blue-600 font-medium">
+              <div className="flex items-center gap-1 text-indigo-600 dark:text-indigo-400 font-medium">
                 <Repeat className="h-4 w-4" />
                 <span className="capitalize">{task.recurringPattern.toLowerCase()}</span>
               </div>
@@ -175,7 +176,7 @@ export function TaskCard({ task, onToggleComplete, onEdit, onDelete, onArchive }
             {onEdit && (
               <button
                 onClick={() => onEdit(task)}
-                className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                className="p-2 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded transition-colors"
                 aria-label={`Edit task "${task.title}"`}
               >
                 <Pencil className="h-4 w-4" />
@@ -184,7 +185,7 @@ export function TaskCard({ task, onToggleComplete, onEdit, onDelete, onArchive }
             {onArchive && task.status !== 'ARCHIVED' && (
               <button
                 onClick={() => onArchive(task.id)}
-                className="p-2 text-gray-500 hover:text-amber-600 hover:bg-amber-50 rounded transition-colors"
+                className="p-2 text-slate-500 dark:text-slate-400 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded transition-colors"
                 aria-label={`Archive task "${task.title}"`}
               >
                 <Archive className="h-4 w-4" />
@@ -193,7 +194,7 @@ export function TaskCard({ task, onToggleComplete, onEdit, onDelete, onArchive }
             {onDelete && (
               <button
                 onClick={() => onDelete(task.id)}
-                className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                className="p-2 text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
                 aria-label={`Delete task "${task.title}"`}
               >
                 <Trash2 className="h-4 w-4" />
@@ -206,7 +207,7 @@ export function TaskCard({ task, onToggleComplete, onEdit, onDelete, onArchive }
       {/* Overdue indicator */}
       {taskIsOverdue && (
         <div className="absolute top-2 right-2">
-          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300">
             Overdue
           </span>
         </div>

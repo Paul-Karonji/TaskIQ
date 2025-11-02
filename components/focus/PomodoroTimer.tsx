@@ -34,14 +34,40 @@ export function PomodoroTimer({ onComplete }: PomodoroTimerProps) {
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Play completion sound
+  // Play completion sound using Web Audio API
   const playSound = () => {
     if (soundEnabled) {
-      const audio = new Audio('/notification.mp3');
-      audio.play().catch(() => {
-        // Fallback: Use system notification sound or log
-        console.log('Timer complete!');
-      });
+      try {
+        // Create audio context
+        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+
+        // Create oscillator for the beep sound
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        // Configure the beep
+        oscillator.frequency.value = 800; // Frequency in Hz (higher = higher pitch)
+        oscillator.type = 'sine'; // Smooth sine wave
+
+        // Envelope: fade in and fade out for smoother sound
+        gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.1); // Fade in
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5); // Fade out
+
+        // Play the beep
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.5);
+
+        // Clean up
+        oscillator.onended = () => {
+          audioContext.close();
+        };
+      } catch (error) {
+        console.log('Timer complete! (Audio not available)');
+      }
     }
   };
 
@@ -192,8 +218,8 @@ export function PomodoroTimer({ onComplete }: PomodoroTimerProps) {
         {/* Timer display */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center">
-            <p className="text-6xl font-bold mb-2">{formatTime(timeLeft)}</p>
-            <p className="text-gray-400 text-sm">
+            <p className="text-6xl font-bold mb-2 text-white">{formatTime(timeLeft)}</p>
+            <p className="text-gray-200 text-sm">
               {mode === 'work' ? 'Focus Time' : 'Break Time'}
             </p>
           </div>
@@ -216,7 +242,7 @@ export function PomodoroTimer({ onComplete }: PomodoroTimerProps) {
             onClick={pause}
             size="lg"
             variant="outline"
-            className="px-8"
+            className="px-8 text-white hover:text-gray-100 border-gray-600 hover:bg-gray-700"
           >
             <Pause className="h-5 w-5 mr-2" />
             Pause
@@ -227,7 +253,7 @@ export function PomodoroTimer({ onComplete }: PomodoroTimerProps) {
           onClick={reset}
           size="lg"
           variant="outline"
-          className="text-gray-700 hover:text-gray-900"
+          className="text-white hover:text-gray-100 border-gray-600 hover:bg-gray-700"
         >
           <RotateCcw className="h-5 w-5" />
         </Button>
@@ -236,7 +262,7 @@ export function PomodoroTimer({ onComplete }: PomodoroTimerProps) {
           onClick={() => setSoundEnabled(!soundEnabled)}
           size="lg"
           variant="outline"
-          className="text-gray-700 hover:text-gray-900"
+          className="text-white hover:text-gray-100 border-gray-600 hover:bg-gray-700"
         >
           {soundEnabled ? (
             <Volume2 className="h-5 w-5" />
@@ -248,14 +274,14 @@ export function PomodoroTimer({ onComplete }: PomodoroTimerProps) {
         {/* Settings dialog */}
         <Dialog>
           <DialogTrigger asChild>
-            <Button size="lg" variant="outline" className="text-gray-700 hover:text-gray-900">
+            <Button size="lg" variant="outline" className="text-white hover:text-gray-100 border-gray-600 hover:bg-gray-700">
               <Settings className="h-5 w-5" />
             </Button>
           </DialogTrigger>
           <DialogContent className="bg-gray-800 text-white border-gray-700">
             <DialogHeader>
               <DialogTitle>Timer Settings</DialogTitle>
-              <DialogDescription className="text-gray-400">
+              <DialogDescription className="text-gray-200">
                 Customize your focus and break durations
               </DialogDescription>
             </DialogHeader>

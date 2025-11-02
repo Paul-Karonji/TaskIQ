@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Search, Filter, Tag as TagIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
@@ -19,31 +20,43 @@ import { useTags } from '@/lib/hooks/useTags';
 interface TaskFiltersProps {
   onFiltersChange: (filters: TaskFiltersType) => void;
   initialFilters?: TaskFiltersType;
+  isSearchPage?: boolean; // Flag to indicate if we're on the search page
 }
 
-export function TaskFilters({ onFiltersChange, initialFilters }: TaskFiltersProps) {
+export function TaskFilters({ onFiltersChange, initialFilters, isSearchPage = false }: TaskFiltersProps) {
+  const router = useRouter();
   const [search, setSearch] = useState(initialFilters?.search || '');
   const [status, setStatus] = useState<Status | 'ALL'>(initialFilters?.status || 'ALL');
   const [priority, setPriority] = useState<Priority | 'ALL'>(initialFilters?.priority || 'ALL');
   const [tagId, setTagId] = useState<string | undefined>(initialFilters?.tagId);
 
   // Fetch tags for filtering
-  const { data: tagsData } = useTags();
-  const tags = tagsData?.tags || [];
+  const { data: tags = [] } = useTags();
 
-  // Debounced search handler
+  // Debounced search handler - redirects to search page if not already there
   useEffect(() => {
     const debouncedUpdate = debounce(() => {
-      onFiltersChange({
-        search: search || undefined,
-        status: status !== 'ALL' ? status : undefined,
-        priority: priority !== 'ALL' ? priority : undefined,
-        tagId: tagId || undefined,
-      });
+      // If user is searching and NOT on search page, redirect to search page
+      if (search && !isSearchPage) {
+        const params = new URLSearchParams();
+        params.set('q', search);
+        if (status !== 'ALL') params.set('status', status);
+        if (priority !== 'ALL') params.set('priority', priority);
+        if (tagId) params.set('categoryId', tagId);
+        router.push(`/search?${params.toString()}`);
+      } else {
+        // Otherwise, update filters normally (on search page or when no search)
+        onFiltersChange({
+          search: search || undefined,
+          status: status !== 'ALL' ? status : undefined,
+          priority: priority !== 'ALL' ? priority : undefined,
+          tagId: tagId || undefined,
+        });
+      }
     }, 300);
 
     debouncedUpdate();
-  }, [search, status, priority, tagId, onFiltersChange]);
+  }, [search, status, priority, tagId, onFiltersChange, isSearchPage, router]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
@@ -71,14 +84,14 @@ export function TaskFilters({ onFiltersChange, initialFilters }: TaskFiltersProp
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+    <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-4 shadow-card dark:shadow-card-dark transition-colors">
       <div className="flex items-center gap-2 mb-4">
-        <Filter className="h-5 w-5 text-gray-500" />
-        <h3 className="font-semibold text-gray-900">Filters</h3>
+        <Filter className="h-5 w-5 text-slate-500 dark:text-slate-400" />
+        <h3 className="font-semibold text-slate-900 dark:text-slate-100">Filters</h3>
         {hasActiveFilters && (
           <button
             onClick={handleClearFilters}
-            className="ml-auto text-sm text-blue-600 hover:text-blue-700 font-medium"
+            className="ml-auto text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium transition-colors"
           >
             Clear all
           </button>
@@ -92,7 +105,7 @@ export function TaskFilters({ onFiltersChange, initialFilters }: TaskFiltersProp
             Search tasks
           </label>
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" />
             <Input
               id="search"
               type="text"

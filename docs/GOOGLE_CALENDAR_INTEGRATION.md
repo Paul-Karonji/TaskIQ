@@ -1,13 +1,13 @@
 # Google Calendar Integration Guide
 
-This guide explains how to use the Google Calendar integration in TaskIQ.
+This guide explains how to use the Google Calendar integration in DueSync.
 
 ## Overview
 
-TaskIQ integrates with Google Calendar to automatically sync your tasks as calendar events. This allows you to:
+DueSync integrates with Google Calendar to automatically sync your tasks as calendar events. This allows you to:
 - View your tasks in Google Calendar
 - Get calendar notifications for your tasks
-- Manage tasks from either TaskIQ or Google Calendar
+- Manage tasks from either DueSync or Google Calendar
 - Automatically sync changes between both platforms
 
 ## Setup
@@ -25,7 +25,7 @@ TaskIQ integrates with Google Calendar to automatically sync your tasks as calen
 1. Go to **APIs & Services** > **OAuth consent screen**
 2. Choose **External** user type
 3. Fill in the required information:
-   - App name: TaskIQ
+   - App name: DueSync
    - User support email: Your email
    - Developer contact: Your email
 4. Add the following scopes:
@@ -320,7 +320,7 @@ try {
 
 Potential improvements for the integration:
 
-1. **Bidirectional Sync**: Sync changes from Google Calendar back to TaskIQ
+1. **Bidirectional Sync**: Sync changes from Google Calendar back to DueSync
 2. **Multiple Calendars**: Support syncing to different calendars
 3. **Batch Operations**: Sync multiple tasks at once
 4. **Webhook Support**: Real-time updates using Google Calendar webhooks

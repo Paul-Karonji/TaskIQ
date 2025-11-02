@@ -292,14 +292,30 @@ export async function deleteCalendarEvent(userId: string, eventId: string) {
       eventId: eventId,
     });
 
+    console.log('Calendar event deleted successfully:', eventId);
     return true;
-  } catch (error) {
-    console.error('Failed to delete calendar event:', error);
-    // Don't throw error if event doesn't exist
-    if ((error as any)?.code === 404) {
+  } catch (error: any) {
+    // Check both error.code and error.response?.status for Google API errors
+    const errorCode = error.code || error.response?.status || error.status;
+
+    console.log('Delete calendar event error:', {
+      eventId,
+      errorCode,
+      message: error.message,
+    });
+
+    // Treat 404 (Not Found) and 410 (Gone) as success - event is already deleted
+    if (errorCode === 404 || errorCode === 410) {
+      console.log(`Event ${eventId} not found or already deleted (${errorCode}), treating as success`);
       return true;
     }
-    throw new Error('Failed to delete calendar event');
+
+    console.error('Failed to delete calendar event:', {
+      eventId,
+      error: error.message,
+      code: errorCode,
+    });
+    throw new Error(`Failed to delete calendar event: ${error.message}`);
   }
 }
 

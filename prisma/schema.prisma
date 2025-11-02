@@ -25,6 +25,11 @@ model User {
   accessToken   String?   @db.Text
   refreshToken  String?   @db.Text
 
+  // Onboarding
+  hasCompletedOnboarding Boolean   @default(false)
+  onboardingCompletedAt  DateTime?
+  onboardingSkipped      Boolean   @default(false)
+
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 

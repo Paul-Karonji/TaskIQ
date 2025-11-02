@@ -1,10 +1,10 @@
 # Email Configuration Guide
 
-This guide explains how to set up email notifications for TaskIQ using Gmail SMTP or other email providers.
+This guide explains how to set up email notifications for DueSync using Gmail SMTP or other email providers.
 
 ## Overview
 
-TaskIQ sends automated email notifications including:
+DueSync sends automated email notifications including:
 - **Daily Digest**: Summary of today's pending tasks
 - **Weekly Report**: Weekly productivity summary with statistics
 - **Test Emails**: Manual test emails from notification preferences
@@ -26,7 +26,7 @@ TaskIQ sends automated email notifications including:
 
 1. Go to [Google Account App Passwords](https://myaccount.google.com/apppasswords)
 2. Select app: **Mail**
-3. Select device: **Other (Custom name)** - Enter "TaskIQ"
+3. Select device: **Other (Custom name)** - Enter "DueSync"
 4. Click **Generate**
 5. Copy the 16-character app password (remove spaces)
 
@@ -54,7 +54,7 @@ npm run dev
 
 ### Step 5: Test Email Delivery
 
-1. Go to TaskIQ dashboard
+1. Go to DueSync dashboard
 2. Click **Notifications** button
 3. Configure your preferences
 4. Click **Send Test Email**
@@ -62,7 +62,7 @@ npm run dev
 
 ## Other Email Providers
 
-TaskIQ uses Nodemailer which supports any SMTP provider. You'll need to modify `lib/email.ts`:
+DueSync uses Nodemailer which supports any SMTP provider. You'll need to modify `lib/email.ts`:
 
 ### SendGrid
 
@@ -126,7 +126,7 @@ GMAIL_USER="verified-sender@example.com"
 
 ## Email Templates
 
-TaskIQ includes pre-built HTML email templates:
+DueSync includes pre-built HTML email templates:
 
 ### Daily Digest Email
 
@@ -136,7 +136,7 @@ TaskIQ includes pre-built HTML email templates:
   - Priority breakdown
   - Tasks grouped by category
   - Estimated total time
-  - Direct link to TaskIQ
+  - Direct link to DueSync
 
 ### Weekly Report Email
 

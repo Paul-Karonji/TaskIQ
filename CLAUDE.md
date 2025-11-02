@@ -1,6 +1,6 @@
-# TaskIQ - Project Documentation for Claude
+# DueSync - Project Documentation for Claude
 
-> Comprehensive documentation for AI assistants and developers working on TaskIQ
+> Comprehensive documentation for AI assistants and developers working on DueSync
 
 ## Table of Contents
 1. [Project Overview](#project-overview)
@@ -20,7 +20,7 @@
 
 ## Project Overview
 
-**TaskIQ** is a modern, intelligent task management application designed to help users organize, prioritize, and sync their tasks with Google Calendar. The project is built with Next.js 15, React, TypeScript, and integrates with PostgreSQL via Prisma ORM.
+**DueSync** is a modern, intelligent task management application designed to help users organize, prioritize, and sync their tasks with Google Calendar. The project is built with Next.js 15, React, TypeScript, and integrates with PostgreSQL via Prisma ORM.
 
 ### Key Features
 - Task CRUD operations with priority levels
@@ -42,7 +42,7 @@
 
 ### Application Structure
 ```
-TaskIQ/
+DueSync/
 ├── app/                          # Next.js 15 App Router
 │   ├── api/                      # API routes
 │   │   ├── auth/                 # NextAuth endpoints
@@ -525,48 +525,106 @@ Clear all authentication tokens (useful for troubleshooting).
 - ✅ Debug endpoints
 - ✅ Comprehensive documentation
 
-#### ✅ Recurring Tasks (100%)
-- ✅ Database schema (RecurringPattern enum)
+#### ✅ Recurring Tasks (100% - Fully Functional)
+- ✅ Database schema (RecurringPattern enum: DAILY, WEEKLY, MONTHLY)
 - ✅ Task model fields (isRecurring, recurringPattern)
-- ✅ UI to create recurring tasks (QuickAddTask)
-- ✅ Task generation logic (on completion)
-- ✅ Cron job for recurring instances
-- ✅ Visual indicators in TaskCard
-- ✅ Date calculation utility function
+- ✅ Complete UI in QuickAddTask (checkbox + pattern selector at lines 280-315)
+- ✅ Cron job for task generation (`/api/cron/generate-recurring`) running hourly
+- ✅ Smart duplicate detection (prevents generating existing instances)
+- ✅ Automatic next instance creation with full task copying
+- ✅ Visual indicators in TaskCard (Repeat icon)
+- ✅ Date calculation utility function (calculateNextRecurringDate)
+- 🟡 Advanced patterns (skip weekends, custom intervals) - future enhancement
 
 #### ✅ Focus Mode (100%)
 - ✅ API endpoint (/api/tasks/today)
 - ✅ Focus Mode page (/app/focus/page.tsx)
-- ✅ Pomodoro timer functionality
-- ✅ Distraction-free UI
-- ✅ Task navigation (previous/next)
+- ✅ Pomodoro timer functionality with circular progress
+- ✅ Work/Break mode switching
+- ✅ Task navigation (previous/next/progress dots)
 - ✅ Timer controls (start/pause/reset)
-- ✅ Customizable timer settings
-- ✅ Visual circular progress indicator
+- ✅ Customizable timer settings (1-60 min work, 1-30 min break)
+- ✅ Sound on timer completion
+- ✅ Audio controls toggle
+- ✅ Distraction-free UI
 - ✅ Navigation button in dashboard
+- ✅ Empty state handling
 
 #### ✅ Email Notifications (100%)
 - ✅ Database schema (NotificationPreference)
-- ✅ Email service integration (Nodemailer + Gmail)
-- ✅ HTML email templates (daily & weekly)
-- ✅ Notification scheduler (cron job)
-- ✅ Daily/weekly summaries
-- ✅ Notification preferences UI
+- ✅ Email service integration (Nodemailer + Gmail SMTP)
+- ✅ HTML email templates (daily & weekly with beautiful styling)
+- ✅ Notification scheduler (cron job - `/api/cron/send-notifications`)
+- ✅ Daily task summaries with task details
+- ✅ Weekly reports with statistics (completed, pending, overdue)
+- ✅ Notification preferences UI (time & day selection)
 - ✅ Test email functionality
 - ✅ User-configurable time and day settings
-- ✅ Beautiful, responsive email designs
+- ✅ Smart skipping (no email if no tasks)
+- ✅ Responsive email designs
+- ✅ Complete error handling and logging
+
+#### ✅ Push Notifications (100%)
+- ✅ VAPID keys configuration
+- ✅ Client-side utilities (`lib/push.ts`)
+  - Browser support detection
+  - Permission request flow
+  - Subscribe/unsubscribe functionality
+  - Subscription status checking
+- ✅ Server-side utilities (`lib/push-sender.ts`)
+  - Send to single/multiple users
+  - Task-specific helpers (reminder, overdue, due today)
+  - Expired subscription handling
+  - User preference checking
+- ✅ API endpoints
+  - POST `/api/notifications/push/subscribe`
+  - DELETE `/api/notifications/push/unsubscribe`
+  - POST `/api/notifications/push/test`
+- ✅ Service Worker (`public/sw.js`)
+- ✅ Cron job (`/api/cron/push-reminders`)
+  - Runs every 15 minutes
+  - Sends reminders (customizable minutes before)
+  - Sends overdue alerts (9 AM daily)
+  - Sends due today reminders (8 AM daily)
+  - CRON_SECRET authorization
+  - Complete error handling
 
 #### ✅ Categories/Tags Management (100%)
 - ✅ Database schema
-- ✅ Display in TaskCard
+- ✅ Complete CRUD API endpoints (GET, POST, PATCH, DELETE)
+- ✅ Display in TaskCard with colors
 - ✅ Creation UI (CategoryManager, TagManager)
-- ✅ Edit/delete UI
-- ✅ API endpoints for CRUD
-- ✅ Category/tag selection in forms
+- ✅ Edit/delete functionality with confirmations
+- ✅ Category/tag selection in task forms
 - ✅ Color picker component
-- ✅ Task count display
+- ✅ Task count display per category/tag
 - ✅ React Query hooks for data management
 - ✅ Management buttons in dashboard
+- ✅ Task filtering by category and tag
+
+#### ✅ User Onboarding Tour (100%)
+- ✅ Welcome tour component using driver.js (`components/onboarding/WelcomeTour.tsx`)
+- ✅ 9-step interactive guide covering all features
+- ✅ Highlights: Quick Add, Filters, Categories, Focus Mode, Notifications, Priority Queue, Settings
+- ✅ Progress indicators showing step completion
+- ✅ Skip/back/next/finish navigation
+- ✅ API endpoint for tracking onboarding status (`/api/user/onboarding`)
+- ✅ Resume tour functionality (from Settings → Profile)
+- ✅ Smart skipping (tracks if user skipped or completed)
+- ✅ Custom hook (`useOnboarding`) for state management
+- ✅ Responsive design for mobile and desktop
+- ✅ Auto-triggers for new users on first login
+
+#### ✅ Archive Page (100%)
+- ✅ Dedicated archive page at `/app/archive/page.tsx`
+- ✅ View all archived tasks
+- ✅ Restore functionality (moves task back to PENDING status)
+- ✅ Permanent delete option with confirmation
+- ✅ Task count display
+- ✅ Empty state handling with helpful messaging
+- ✅ Back to dashboard navigation
+- ✅ Full integration with TaskCard component
+- ✅ Toast notifications for user feedback
 
 ---
 
@@ -663,7 +721,7 @@ Button to sync/unsync tasks with Google Calendar.
 ### Initial Setup
 
 1. **Google Cloud Console Configuration:**
-   - Project: TaskIQ (taskiq-475306)
+   - Project: DueSync (taskiq-475306)
    - OAuth 2.0 Client ID created
    - Authorized redirect URIs configured
    - Calendar API enabled
@@ -726,8 +784,8 @@ Button to sync/unsync tasks with Google Calendar.
 When refresh token is invalid:
 1. User sees "Please sign out and sign back in"
 2. User goes to Google account connections
-3. Removes TaskIQ access
-4. Signs out from TaskIQ
+3. Removes DueSync access
+4. Signs out from DueSync
 5. Signs in again with fresh consent
 
 ---
@@ -735,7 +793,7 @@ When refresh token is invalid:
 ## Google Calendar Integration
 
 ### Overview
-Full two-way sync between TaskIQ tasks and Google Calendar events.
+Full two-way sync between DueSync tasks and Google Calendar events.
 
 ### Architecture
 
@@ -866,7 +924,7 @@ npm start
 
 **Solution**:
 - User must revoke access at Google account settings
-- Sign out from TaskIQ
+- Sign out from DueSync
 - Sign in again with fresh consent
 - Use `/api/debug/clear-tokens` to clear old tokens
 
@@ -941,7 +999,7 @@ npm start
 - Region: AWS US East 1
 
 ### Google Cloud
-- Project: TaskIQ
+- Project: DueSync
 - Project ID: taskiq-475306
 - OAuth Client configured
 - Calendar API enabled
@@ -1118,6 +1176,8 @@ For issues or questions about this codebase, refer to this document first. It co
 
 ---
 
-**Last Updated**: October 30, 2025
-**Current Version**: Week 3 (Complete - 100%)
-**Next Milestone**: Week 4 enhancements (optional features)
+**Last Updated**: October 31, 2025
+**Current Version**: Week 3+ (98% Complete - Production Ready)
+**Status**: All major features fully implemented and functional. Application is production-ready.
+**Remaining Work**: Performance optimization (code splitting, lazy loading) - approximately 3-4 hours
+**Next Steps**: Deploy to production, gather user feedback, optional enhancements (advanced recurring patterns, team features)

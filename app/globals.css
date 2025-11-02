@@ -2,94 +2,158 @@
 @tailwind components;
 @tailwind utilities;
 
-/* TaskIQ Color Palette & Theme */
+/* ========================================
+   TaskIQ - Modern Minimal Theme
+   Design System v2.0
+   ======================================== */
+
+/* Light Mode Variables */
 :root {
-  /* Primary Colors */
-  --primary: #3B82F6;
-  --primary-light: #60A5FA;
-  --primary-dark: #2563EB;
+  /* Primary Colors - Indigo Palette */
+  --primary: #4F46E5; /* indigo-600 */
+  --primary-hover: #4338CA; /* indigo-700 */
+  --primary-light: #818CF8; /* indigo-400 */
+
+  /* Accent Colors - Emerald for Success */
+  --accent: #10B981; /* emerald-500 */
+  --accent-hover: #059669; /* emerald-600 */
+
+  /* Warning & Error */
+  --warning: #F59E0B; /* amber-500 */
+  --error: #EF4444; /* red-500 */
 
   /* Priority Colors */
-  --priority-high: #EF4444;
-  --priority-medium: #F59E0B;
-  --priority-low: #10B981;
+  --priority-high: #EF4444; /* red-500 */
+  --priority-medium: #F59E0B; /* amber-500 */
+  --priority-low: #10B981; /* emerald-500 */
 
-  /* Neutral Colors */
-  --background: #F9FAFB;
-  --surface: #FFFFFF;
-  --border: #E5E7EB;
-  --text-primary: #111827;
-  --text-secondary: #6B7280;
-  --text-muted: #9CA3AF;
+  /* Backgrounds */
+  --background: #F9FAFB; /* neutral-50 */
+  --surface: #FFFFFF; /* white */
+  --sidebar: #F1F5F9; /* slate-100 */
+  --input-bg: #FFFFFF; /* white */
+  --highlight: #EEF2FF; /* indigo-50 */
 
-  /* Accent Colors */
-  --accent-purple: #8B5CF6;
-  --accent-pink: #EC4899;
-  --accent-teal: #14B8A6;
-  --accent-orange: #F97316;
-  --accent-indigo: #6366F1;
+  /* Borders & Dividers */
+  --border: #E2E8F0; /* slate-200 */
+
+  /* Text Colors */
+  --text-primary: #1E293B; /* slate-800 */
+  --text-secondary: #64748B; /* slate-500 */
+  --text-placeholder: #94A3B8; /* slate-400 */
+  --link: #4F46E5; /* indigo-600 */
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 1px 3px 0 rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 4px 6px -1px rgba(15, 23, 42, 0.1);
 }
 
-/* Dark Mode Theme */
+/* Dark Mode Variables */
 .dark {
-  /* Primary Colors (slightly brighter for dark mode) */
-  --primary: #60A5FA;
-  --primary-light: #93C5FD;
-  --primary-dark: #3B82F6;
+  /* Primary Colors - Indigo Palette (lighter for dark) */
+  --primary: #818CF8; /* indigo-400 */
+  --primary-hover: #A5B4FC; /* indigo-300 */
+  --primary-light: #A5B4FC; /* indigo-300 */
 
-  /* Priority Colors (adjusted for dark mode visibility) */
-  --priority-high: #F87171;
-  --priority-medium: #FBBF24;
-  --priority-low: #34D399;
+  /* Accent Colors */
+  --accent: #34D399; /* emerald-400 */
+  --accent-hover: #6EE7B7; /* emerald-300 */
 
-  /* Neutral Colors (inverted) */
+  /* Warning & Error */
+  --warning: #FBBF24; /* amber-400 */
+  --error: #F87171; /* red-400 */
+
+  /* Priority Colors */
+  --priority-high: #F87171; /* red-400 */
+  --priority-medium: #FBBF24; /* amber-400 */
+  --priority-low: #34D399; /* emerald-400 */
+
+  /* Backgrounds */
   --background: #0F172A; /* slate-900 */
   --surface: #1E293B; /* slate-800 */
-  --border: #334155; /* slate-700 */
-  --text-primary: #F1F5F9; /* slate-100 */
-  --text-secondary: #CBD5E1; /* slate-300 */
-  --text-muted: #94A3B8; /* slate-400 */
+  --sidebar: #1A2234; /* custom slate-850 */
+  --input-bg: #1E293B; /* slate-800 */
+  --highlight: #312E81; /* indigo-900 */
 
-  /* Accent Colors (brighter for dark mode) */
-  --accent-purple: #A78BFA;
-  --accent-pink: #F472B6;
-  --accent-teal: #2DD4BF;
-  --accent-orange: #FB923C;
-  --accent-indigo: #818CF8;
+  /* Borders & Dividers */
+  --border: #334155; /* slate-700 */
+
+  /* Text Colors */
+  --text-primary: #F1F5F9; /* slate-100 */
+  --text-secondary: #94A3B8; /* slate-400 */
+  --text-placeholder: #64748B; /* slate-500 */
+  --link: #818CF8; /* indigo-400 */
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 1px 3px 0 rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
 }
 
 @layer base {
+  * {
+    @apply border-border;
+  }
+
   body {
-    @apply bg-gray-50 text-gray-900 dark:bg-slate-900 dark:text-slate-100 antialiased;
-    font-family: var(--font-inter), 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    @apply antialiased;
+    background-color: var(--background);
+    color: var(--text-primary);
+    font-family: var(--font-inter), 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  a {
+    color: var(--link);
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: var(--primary-hover);
   }
 }
 
-/* Custom scrollbar */
+/* Custom Scrollbar - Modern Minimal */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-gray-100 dark:bg-slate-800;
+  background-color: var(--background);
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-gray-300 dark:bg-slate-600 rounded-full;
+  @apply rounded-full;
+  background-color: var(--border);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-gray-400 dark:bg-slate-500;
+  background-color: var(--text-secondary);
 }
 
 /* Focus Mode Gradient Background */
 .focus-mode-bg {
-  background: linear-gradient(to bottom right, #EFF6FF, #E0E7FF);
+  background: linear-gradient(to bottom, #EEF2FF 0%, #FFFFFF 100%);
 }
 
 .dark .focus-mode-bg {
-  background: linear-gradient(to bottom right, #1E293B, #0F172A);
+  background: linear-gradient(to bottom, #0F172A 0%, #1E1B4B 100%);
+}
+
+/* Modal Overlays - Modern Minimal Theme */
+.modal-overlay {
+  background-color: rgba(255, 255, 255, 0.9); /* White 90% opacity */
+}
+
+.dark .modal-overlay {
+  background-color: rgba(0, 0, 0, 0.8); /* Black 80% opacity */
 }
 
 /* Animation utilities */

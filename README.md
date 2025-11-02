@@ -1,6 +1,6 @@
 # DueSync - Smart Task Synchronization
 
-> **Status:** Production Ready - 100% Complete | **Version:** 1.0.0 | **Last Updated:** November 1, 2025
+> **Status:** Production Ready - 100% Complete | **Version:** 1.0.0 | **Last Updated:** November 2, 2025
 
 A modern, intelligent task management application built with Next.js 15, React Query, Prisma, and NextAuth. Features Google Calendar sync, email & push notifications, Focus Mode with Pomodoro timer, recurring tasks, categories/tags, interactive onboarding, and archive management.
 
@@ -523,68 +523,438 @@ npx web-push generate-vapid-keys  # Generate VAPID keys
 
 ---
 
-## 🚀 Deployment
+## 🚀 Production Deployment
 
-### Vercel (Recommended)
+### Pre-Deployment Checklist
 
-1. **Push to GitHub**
+Before deploying to production, ensure you have:
+
+#### Required Services
+- [ ] PostgreSQL database (Supabase recommended)
+- [ ] Google OAuth credentials configured
+- [ ] Resend account for email notifications
+- [ ] Upstash Redis for rate limiting
+- [ ] Domain name (optional, can use Vercel subdomain)
+
+#### Environment Configuration
+- [ ] Copy `.env.example` to `.env`
+- [ ] Fill in all production values
+- [ ] Update `NEXTAUTH_URL` to production domain
+- [ ] Set strong `NEXTAUTH_SECRET` (generate with `openssl rand -base64 32`)
+- [ ] Set strong `CRON_SECRET` (generate with `openssl rand -base64 32`)
+- [ ] Generate VAPID keys for push notifications
+- [ ] Verify email domain in Resend
+- [ ] Update `RESEND_FROM_EMAIL` to verified domain
+- [ ] Test database connection (connection_limit=100)
+
+#### Google OAuth Setup
+- [ ] Add production URL to Google Cloud Console
+- [ ] Update authorized redirect URIs:
+  - `https://your-domain.com/api/auth/callback/google`
+- [ ] Verify calendar API is enabled
+- [ ] Test OAuth flow in staging first
+
+#### Database Setup
+- [ ] Run Prisma migrations (see `docs/BASELINE_MIGRATION.md`)
+- [x] Row-Level Security enabled (see `APPLY_RLS.md` for details)
+- [ ] Verify database indexes are created
+- [ ] Test database connection pooling
+
+#### Optional but Recommended
+- [ ] Set up Sentry error monitoring (see `docs/ERROR_MONITORING.md`)
+- [ ] Configure custom domain
+- [ ] Set up SSL certificate (automatic with Vercel)
+- [ ] Enable Vercel Analytics
+
+### Vercel Deployment (Recommended)
+
+#### Step 1: Prepare Repository
+
+```bash
+# Initialize git (if not already done)
+git init
+
+# Add all files
+git add .
+
+# Create initial commit
+git commit -m "Production-ready deployment"
+
+# Create GitHub repository and push
+git remote add origin https://github.com/yourusername/duesync.git
+git branch -M main
+git push -u origin main
+```
+
+#### Step 2: Connect to Vercel
+
+1. Visit [vercel.com](https://vercel.com) and sign in
+2. Click "Add New Project"
+3. Import your GitHub repository
+4. Vercel will auto-detect Next.js configuration
+
+#### Step 3: Configure Environment Variables
+
+In Vercel dashboard (Settings → Environment Variables), add ALL variables from `.env`:
+
+**Critical Variables:**
+```
+DATABASE_URL=postgresql://...?connection_limit=100
+DIRECT_URL=postgresql://...
+NEXTAUTH_URL=https://your-domain.vercel.app
+NEXTAUTH_SECRET=your-production-secret
+GOOGLE_CLIENT_ID=your-client-id
+GOOGLE_CLIENT_SECRET=your-client-secret
+GOOGLE_REDIRECT_URI=https://your-domain.vercel.app/api/auth/callback/google
+VAPID_PUBLIC_KEY=your-key
+NEXT_PUBLIC_VAPID_PUBLIC_KEY=your-key
+VAPID_PRIVATE_KEY=your-key
+VAPID_SUBJECT=mailto:duesync@wiktechnologies.com
+CRON_SECRET=your-strong-secret
+RESEND_API_KEY=re_your_key
+RESEND_FROM_EMAIL=noreply@your-domain.com
+UPSTASH_REDIS_REST_URL=https://your-redis.upstash.io
+UPSTASH_REDIS_REST_TOKEN=your-token
+```
+
+**Optional Variables:**
+```
+NEXT_PUBLIC_SENTRY_DSN=https://...@sentry.io/...
+SENTRY_AUTH_TOKEN=your-sentry-token
+```
+
+**Important:**
+- Use "Production" environment for all variables
+- Can add "Preview" and "Development" separately
+- Never commit secrets to git
+
+#### Step 4: Configure Cron Jobs
+
+Ensure `vercel.json` exists with cron configuration:
+
+```json
+{
+  "crons": [
+    {
+      "path": "/api/cron/generate-recurring",
+      "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/cron/send-notifications",
+      "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/cron/push-reminders",
+      "schedule": "*/15 * * * *"
+    }
+  ]
+}
+```
+
+These cron jobs will automatically:
+- Generate recurring task instances (hourly)
+- Send email notifications (hourly)
+- Send push reminders (every 15 minutes)
+
+**Note:** Vercel Cron requires Pro plan. On Hobby plan, use external cron services like [cron-job.org](https://cron-job.org) with `CRON_SECRET` header.
+
+#### Step 5: Deploy
+
+1. Click "Deploy" in Vercel dashboard
+2. Vercel will:
+   - Install dependencies
+   - Build Next.js application
+   - Generate Prisma Client
+   - Deploy to edge network
+3. Wait for deployment to complete (~2-5 minutes)
+
+#### Step 6: Post-Deployment Configuration
+
+##### Database Migration
+
+**If new database:**
+```bash
+# Connect to production (update DATABASE_URL in .env temporarily)
+npx prisma migrate deploy
+```
+
+**If existing database:**
+See `docs/BASELINE_MIGRATION.md` for baseline migration instructions.
+
+##### Google OAuth
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com)
+2. Select your project
+3. Go to "APIs & Services" → "Credentials"
+4. Edit OAuth 2.0 Client ID
+5. Add authorized redirect URI:
+   ```
+   https://your-production-domain.com/api/auth/callback/google
+   ```
+6. Save changes
+
+##### Resend Email Domain
+
+1. Go to [Resend Dashboard](https://resend.com/domains)
+2. Add your domain (or use Resend's domain for testing)
+3. Add DNS records to verify domain
+4. Update `RESEND_FROM_EMAIL` to use verified domain
+
+##### Test Deployment
+
+Run through this checklist:
+
+**Authentication:**
+- [ ] Can sign in with Google
+- [ ] Can sign out
+- [ ] Session persists on page refresh
+- [ ] Redirects work correctly
+
+**Core Features:**
+- [ ] Can create task
+- [ ] Can edit task
+- [ ] Can delete task
+- [ ] Can mark task as complete
+- [ ] Can filter and search tasks
+
+**Integrations:**
+- [ ] Google Calendar sync works
+- [ ] Email notifications send correctly
+- [ ] Push notifications work (subscribe and test)
+- [ ] Cron jobs execute (check Vercel logs)
+
+**Performance:**
+- [ ] Page load time <3 seconds
+- [ ] API responses <500ms
+- [ ] No console errors
+- [ ] Images load correctly
+
+### Alternative Deployment Options
+
+#### Railway
+
+1. Visit [railway.app](https://railway.app)
+2. Create new project from GitHub
+3. Add environment variables
+4. Deploy
+5. Add Railway PostgreSQL (optional)
+
+**Note:** Railway doesn't support cron jobs natively. Use external cron service.
+
+#### Docker Deployment
+
+1. Build Docker image:
+```bash
+docker build -t duesync .
+```
+
+2. Run container:
+```bash
+docker run -p 3000:3000 --env-file .env duesync
+```
+
+3. For production, use Docker Compose with PostgreSQL
+
+#### Self-Hosted
+
+Requirements:
+- Node.js 18+ server
+- PostgreSQL database
+- Reverse proxy (Nginx/Caddy)
+- SSL certificate
+- Process manager (PM2)
+
+See `docs/SELF_HOSTING.md` for detailed guide (coming soon).
+
+### Post-Deployment Monitoring
+
+#### Monitor Errors
+
+1. **Sentry** (recommended):
+   - See `docs/ERROR_MONITORING.md`
+   - Set up alerts for critical errors
+   - Review error dashboard daily
+
+2. **Vercel Logs**:
+   - View real-time logs in Vercel dashboard
+   - Set up log drains for long-term storage
+
+#### Monitor Performance
+
+1. **Vercel Analytics**:
+   - Enable in project settings (free)
+   - Track page views, load times
+   - Identify slow pages
+
+2. **Database Monitoring**:
+   - Check connection pool usage
+   - Monitor query performance
+   - Set up alerts for high CPU/memory
+
+#### Monitor Cron Jobs
+
+Check Vercel dashboard:
+- Deployments → Functions → Cron
+- View execution history
+- Check for failures
+- Monitor execution duration
+
+### Troubleshooting
+
+#### Build Failures
+
+**"Module not found" errors:**
+```bash
+# Clear node_modules and reinstall
+rm -rf node_modules package-lock.json
+npm install
+```
+
+**TypeScript errors:**
+```bash
+# Run type check locally
+npx tsc --noEmit
+```
+
+#### Runtime Errors
+
+**"Prisma Client not found":**
+- Ensure `npx prisma generate` runs in build command
+- Check Vercel build logs
+
+**Database connection errors:**
+- Verify `DATABASE_URL` is correct
+- Check `connection_limit=100` is set
+- Ensure database is accessible from Vercel IPs
+
+**OAuth errors:**
+- Verify redirect URI matches exactly
+- Check `NEXTAUTH_URL` is production domain
+- Ensure Google OAuth credentials are correct
+
+#### Performance Issues
+
+**Slow API responses:**
+- Check database query performance
+- Increase connection pool size
+- Add database indexes
+- Enable Redis caching
+
+**Memory errors:**
+- Reduce connection pool size
+- Optimize large data fetches
+- Implement pagination
+
+### Rollback Plan
+
+If deployment has critical issues:
+
+1. **Instant Rollback** (Vercel):
+   - Go to Deployments
+   - Find previous working deployment
+   - Click "..." → "Promote to Production"
+
+2. **Code Rollback**:
    ```bash
-   git init
-   git add .
-   git commit -m "Initial commit"
-   git remote add origin your-repo-url
-   git push -u origin main
+   git revert HEAD
+   git push origin main
    ```
 
-2. **Connect to Vercel**
-   - Visit [vercel.com](https://vercel.com)
-   - Import your GitHub repository
-   - Vercel will auto-detect Next.js
+3. **Database Rollback**:
+   - Restore from backup
+   - Revert problematic migration
 
-3. **Configure Environment Variables**
-   Add all variables from `.env` in Vercel dashboard:
-   - Database URLs
-   - Google OAuth credentials
-   - NextAuth secret and URL
-   - Gmail credentials
-   - VAPID keys
-   - CRON_SECRET
+### Security Hardening
 
-4. **Configure Cron Jobs**
-   Ensure `vercel.json` has cron configuration:
-   ```json
-   {
-     "crons": [
-       {
-         "path": "/api/cron/generate-recurring",
-         "schedule": "0 * * * *"
-       },
-       {
-         "path": "/api/cron/send-notifications",
-         "schedule": "0 * * * *"
-       },
-       {
-         "path": "/api/cron/push-reminders",
-         "schedule": "*/15 * * * *"
-       }
-     ]
-   }
-   ```
+After deployment:
 
-5. **Update Google OAuth**
-   - Add production URL to authorized redirect URIs
-   - Update NEXTAUTH_URL to production domain
+- [ ] Enable Vercel security headers
+- [ ] Set up WAF (Web Application Firewall) if needed
+- [ ] Configure rate limiting properly
+- [ ] Enable HTTPS only (automatic on Vercel)
+- [ ] Set secure cookie flags
+- [ ] Rotate all production secrets
+- [ ] Review Vercel access logs
+- [ ] Set up security alerts
 
-6. **Deploy**
-   Vercel will automatically build and deploy
+### Scaling Considerations
 
-### Post-Deployment
-- ✅ Test authentication flow
-- ✅ Test calendar sync
-- ✅ Verify email notifications
-- ✅ Test push notifications
-- ✅ Monitor cron jobs in Vercel dashboard
-- ✅ Check error logs
+When your app grows:
+
+**Database:**
+- Increase connection pool (already at 100)
+- Consider read replicas for heavy read workloads
+- Upgrade Supabase plan for more resources
+
+**Serverless Functions:**
+- Vercel Pro: Longer execution time (60s vs 10s)
+- Enterprise: Regional deployments
+
+**Caching:**
+- Use Vercel Edge Network
+- Implement Redis for session/data caching
+- Add CDN for static assets
+
+**Monitoring:**
+- Upgrade Sentry plan for more events
+- Set up custom dashboards
+- Enable performance profiling
+
+### Cost Estimation
+
+**Free Tier Limits:**
+- Vercel: 100GB bandwidth, 100 hours serverless
+- Supabase: 500MB database, 2GB transfer
+- Resend: 100 emails/day
+- Upstash: 10,000 requests/day
+- Sentry: 5,000 errors/month
+
+**When to Upgrade:**
+- >1,000 active users: Upgrade Vercel to Pro ($20/mo)
+- >10,000 tasks: Upgrade Supabase to Pro ($25/mo)
+- >100 emails/day: Upgrade Resend ($20/mo for 50k emails)
+- Heavy traffic: Upgrade Upstash ($10/mo)
+
+**Estimated Cost for 10,000 Users:**
+- Vercel Pro: $20/mo
+- Supabase Pro: $25/mo
+- Resend: $20/mo
+- Upstash: $10/mo
+- Sentry: $26/mo
+- **Total: ~$100/mo**
+
+### Support & Maintenance
+
+**Regular Maintenance:**
+- Update dependencies monthly (`npm update`)
+- Run security audits (`npm audit`)
+- Review error logs weekly
+- Backup database daily (automatic with Supabase)
+- Rotate secrets quarterly
+
+**Support Channels:**
+- Email: support@wiktechnologies.com
+- GitHub Issues: For bug reports
+- Documentation: Comprehensive guides in `/docs`
+
+---
+
+**Deployment Success Checklist:**
+
+✅ All environment variables configured
+✅ Database migrations applied
+✅ Google OAuth redirect URIs updated
+✅ Email domain verified in Resend
+✅ Cron jobs executing successfully
+✅ Error monitoring set up (Sentry)
+✅ Authentication flow tested
+✅ All features tested in production
+✅ Performance metrics acceptable
+✅ Security headers configured
+✅ Backup strategy in place
+✅ Monitoring and alerts set up
+
+**You're ready for production!** 🚀
 
 ---
 
@@ -786,4 +1156,4 @@ Clean, modern design with dark mode support and smooth animations throughout.
 
 **Built with ❤️ using Next.js 15, TypeScript, Prisma, and React Query**
 
-*Last Updated: November 1, 2025*
+*Last Updated: November 2, 2025*

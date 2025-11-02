@@ -20,7 +20,11 @@ We release patches for security vulnerabilities in the following versions:
 - **Encryption in Transit**: All data transmitted between your browser and our servers is encrypted using TLS 1.2+
 - **Secure Authentication**: Google OAuth 2.0 with NextAuth v5
 - **Session Management**: HTTP-only cookies with secure flags
-- **Database Security**: PostgreSQL with Prisma ORM (SQL injection prevention)
+- **Database Security**:
+  - PostgreSQL with Prisma ORM (SQL injection prevention)
+  - Row-Level Security (RLS) enabled on all user data tables
+  - Defense-in-depth protection at database layer
+  - See `docs/RLS_IMPLEMENTATION.md` for technical details
 
 ### Application Security
 
@@ -51,7 +55,7 @@ We appreciate the security community's efforts in keeping TaskIQ safe. If you di
 
 ### Where to Report
 
-**Email**: security@taskiq.example.com (replace with actual email)
+**Email**: security@wiktechnologies.com
 
 **Do NOT**:
 - Open a public GitHub issue for security vulnerabilities
@@ -174,12 +178,12 @@ We use the following third-party services:
 
 For security-related inquiries:
 
-- **Email**: security@taskiq.example.com
+- **Email**: security@wiktechnologies.com
 - **Response Time**: Within 48 hours
 - **PGP Key**: Available upon request
 
 For general support:
-- **Email**: support@taskiq.example.com
+- **Email**: support@wiktechnologies.com
 - **GitHub Issues**: For non-security bugs
 
 ## Acknowledgments
@@ -195,7 +199,7 @@ This security policy may be updated from time to time. We will notify users of s
 - Notice on our website
 - GitHub commit history
 
-**Last Updated**: December 2025
+**Last Updated**: November 2, 2025
 
 ---
 

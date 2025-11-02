@@ -17,6 +17,23 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           prompt: 'consent',
         },
       },
+      /**
+       * SECURITY NOTE: allowDangerousEmailAccountLinking is enabled to allow users
+       * to link their Google account even if the email already exists in the database.
+       *
+       * This is necessary because:
+       * 1. We use Google as the sole authentication provider
+       * 2. Users may have accounts created through different OAuth flows
+       * 3. Email verification is handled by Google OAuth (trusted provider)
+       *
+       * Risk Mitigation:
+       * - Only Google OAuth is enabled (no other providers that could exploit this)
+       * - Google performs email verification before issuing tokens
+       * - Users must have access to the Google account to authenticate
+       *
+       * Alternative: Disable this and require strict email uniqueness across providers
+       * (not applicable in single-provider setup)
+       */
       allowDangerousEmailAccountLinking: true,
     }),
   ],

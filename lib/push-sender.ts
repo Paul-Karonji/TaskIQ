@@ -7,7 +7,7 @@ import { Task } from '@/types';
 // Configure VAPID keys
 const vapidPublicKey = process.env.VAPID_PUBLIC_KEY!;
 const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY!;
-const vapidSubject = process.env.VAPID_SUBJECT || 'mailto:taskiq@example.com';
+const vapidSubject = process.env.VAPID_SUBJECT || 'mailto:duesync@wiktechnologies.com';
 
 if (!vapidPublicKey || !vapidPrivateKey) {
   console.error('[Push Sender] VAPID keys not configured');

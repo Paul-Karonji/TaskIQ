@@ -480,8 +480,6 @@ npx web-push generate-vapid-keys  # Generate VAPID keys
 ## 📝 Documentation
 
 ### Main Documentation
-- **`CLAUDE.md`** - Comprehensive project documentation for AI assistants and developers
-- **`system documentation.md`** - System architecture and overview
 - **`README.md`** - This file (quick start and feature overview)
 
 ### Feature Guides

@@ -166,30 +166,33 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Attempt to automatically sync to Google Calendar (non-blocking)
-    try {
-      // Check if user has Google account connected
-      const googleAccount = await prisma.account.findFirst({
-        where: {
-          userId,
-          provider: 'google',
-        },
-      });
-
+    // Attempt to automatically sync to Google Calendar (async, non-blocking)
+    // Fire-and-forget pattern - don't wait for calendar sync to complete
+    prisma.account.findFirst({
+      where: {
+        userId,
+        provider: 'google',
+      },
+    }).then((googleAccount) => {
       if (googleAccount && googleAccount.access_token) {
         console.log('Auto-syncing new task to Google Calendar:', task.id);
-        await createCalendarEvent(userId, task);
-        console.log('Task successfully synced to Google Calendar');
+        createCalendarEvent(userId, task)
+          .then(() => {
+            console.log('Task successfully synced to Google Calendar:', task.id);
+          })
+          .catch((calendarError: any) => {
+            // Log error but task creation already succeeded
+            console.error('Failed to auto-sync task to calendar:', {
+              taskId: task.id,
+              error: calendarError.message,
+            });
+          });
       }
-    } catch (calendarError: any) {
-      // Log error but don't fail task creation
-      console.error('Failed to auto-sync task to calendar:', {
-        taskId: task.id,
-        error: calendarError.message,
-      });
-      // Calendar sync failure doesn't prevent task creation
-    }
+    }).catch((error) => {
+      console.error('Failed to check Google account for calendar sync:', error);
+    });
 
+    // Return immediately without waiting for calendar sync
     return NextResponse.json(
       {
         success: true,

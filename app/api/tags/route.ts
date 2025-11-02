@@ -6,6 +6,7 @@ import { createTagSchema } from '@/lib/validations/tag';
 /**
  * GET /api/tags
  * Fetch all tags for the authenticated user
+ * Limited to 100 tags to prevent memory issues
  */
 export async function GET(request: NextRequest) {
   try {
@@ -14,6 +15,7 @@ export async function GET(request: NextRequest) {
     const tags = await prisma.tag.findMany({
       where: { userId: session.user.id },
       orderBy: { createdAt: 'desc' },
+      take: 100, // Max 100 tags - reasonable limit for most users
       include: {
         _count: {
           select: { tasks: true },

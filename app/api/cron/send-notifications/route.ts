@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { sendDailyTaskEmail, sendWeeklyTaskEmail } from '@/lib/email';
 import { WeekDay } from '@prisma/client';
+import { withLock } from '@/lib/distributed-lock';
 
 /**
  * Cron job to send email notifications
@@ -9,10 +10,12 @@ import { WeekDay } from '@prisma/client';
  *
  * Vercel cron configuration in vercel.json:
  * "crons": [{ "path": "/api/cron/send-notifications", "schedule": "0 * * * *" }]
+ *
+ * Uses distributed locking to prevent concurrent execution across serverless instances
  */
 export async function GET(request: NextRequest) {
   try {
-    // Verify cron secret for security (optional but recommended)
+    // Verify cron secret for security
     const authHeader = request.headers.get('authorization');
     if (process.env.CRON_SECRET) {
       if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
@@ -21,6 +24,41 @@ export async function GET(request: NextRequest) {
     }
 
     console.log('[CRON] Starting email notification check...');
+
+    // Use distributed lock to prevent concurrent executions
+    const result = await withLock('cron:send-notifications', async () => {
+      return await sendEmailNotifications();
+    }, { timeout: 600 }); // 10 minute timeout
+
+    // If lock not acquired, another instance is already running
+    if (result === null) {
+      console.log('[CRON] Email notifications already in progress');
+      return NextResponse.json({
+        success: true,
+        message: 'Job already running in another instance',
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    return NextResponse.json(result);
+  } catch (error: any) {
+    console.error('[CRON] Fatal error in email notification cron:', error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: error.message,
+        timestamp: new Date().toISOString(),
+      },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * Main logic for sending email notifications
+ * Extracted to be wrapped in distributed lock
+ */
+async function sendEmailNotifications() {
 
     const now = new Date();
     const currentHour = now.getHours();
@@ -149,20 +187,9 @@ export async function GET(request: NextRequest) {
 
     console.log('[CRON] Email notification check completed:', summary);
 
-    return NextResponse.json({
+    return {
       success: true,
       summary,
       errors: results.errors.length > 0 ? results.errors : undefined,
-    });
-  } catch (error: any) {
-    console.error('[CRON] Fatal error in email notification cron:', error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: error.message,
-        timestamp: new Date().toISOString(),
-      },
-      { status: 500 }
-    );
-  }
+    };
 }

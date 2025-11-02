@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { Status, RecurringPattern } from '@prisma/client';
 import { calculateNextRecurringDate } from '@/lib/utils';
+import { withLock } from '@/lib/distributed-lock';
 
 /**
  * Cron job to generate recurring task instances
@@ -9,10 +10,12 @@ import { calculateNextRecurringDate } from '@/lib/utils';
  *
  * Vercel cron configuration in vercel.json:
  * "crons": [{ "path": "/api/cron/generate-recurring", "schedule": "0 * * * *" }]
+ *
+ * Uses distributed locking to prevent concurrent execution across serverless instances
  */
 export async function GET(request: NextRequest) {
   try {
-    // Verify cron secret for security (optional but recommended)
+    // Verify cron secret for security
     const authHeader = request.headers.get('authorization');
     if (process.env.CRON_SECRET) {
       if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
@@ -24,6 +27,41 @@ export async function GET(request: NextRequest) {
     }
 
     console.log('[CRON] Starting recurring task generation...');
+
+    // Use distributed lock to prevent concurrent executions
+    const result = await withLock('cron:generate-recurring', async () => {
+      return await generateRecurringTasks();
+    }, { timeout: 600 }); // 10 minute timeout
+
+    // If lock not acquired, another instance is already running
+    if (result === null) {
+      console.log('[CRON] Recurring task generation already in progress');
+      return NextResponse.json({
+        success: true,
+        message: 'Job already running in another instance',
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    return NextResponse.json(result);
+  } catch (error: any) {
+    console.error('[CRON] Fatal error in recurring task generation:', error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: error.message,
+        timestamp: new Date().toISOString(),
+      },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * Main logic for generating recurring tasks
+ * Extracted to be wrapped in distributed lock
+ */
+async function generateRecurringTasks() {
 
     // Find all completed recurring tasks
     const completedRecurringTasks = await prisma.task.findMany({
@@ -147,22 +185,11 @@ export async function GET(request: NextRequest) {
 
     console.log('[CRON] Recurring task generation completed:', summary);
 
-    return NextResponse.json({
+    return {
       success: true,
       summary,
       generatedTasks,
       skippedTasks: skippedTasks.slice(0, 10), // Limit details in response
       errors,
-    });
-  } catch (error: any) {
-    console.error('[CRON] Fatal error in recurring task generation:', error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: error.message,
-        timestamp: new Date().toISOString(),
-      },
-      { status: 500 }
-    );
-  }
+    };
 }

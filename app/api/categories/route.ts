@@ -6,6 +6,7 @@ import { createCategorySchema } from '@/lib/validations/category';
 /**
  * GET /api/categories
  * Fetch all categories for the authenticated user
+ * Limited to 100 categories to prevent memory issues
  */
 export async function GET(request: NextRequest) {
   try {
@@ -14,6 +15,7 @@ export async function GET(request: NextRequest) {
     const categories = await prisma.category.findMany({
       where: { userId: session.user.id },
       orderBy: { createdAt: 'desc' },
+      take: 100, // Max 100 categories - reasonable limit for most users
       include: {
         _count: {
           select: { tasks: true },

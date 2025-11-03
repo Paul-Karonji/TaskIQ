@@ -105,20 +105,19 @@ export function WelcomeTour({ run: runProp, onComplete }: WelcomeTourProps) {
         prevBtnText: '← Back',
         doneBtnText: 'Finish',
         progressText: 'Step {{current}} of {{total}}',
-        onDestroyed: (element, step, options) => {
-          // Get the current step to determine if tour was completed or skipped
-          const wasCompleted = options.state?.activeIndex === options.config?.steps?.length - 1;
+        onDeselected: () => {
+          driverObj.destroy();
+        },
+        onDestroyStarted: (element, step, options) => {
+          const wasCompleted = options.state.activeIndex === options.config.steps.length - 1;
           const wasSkipped = !wasCompleted;
 
-          // Mark tour as complete or skipped
           completeTour(wasSkipped);
 
-          // Call onComplete callback if provided
           if (onComplete) {
             onComplete();
           }
 
-          // Log for debugging (remove in production)
           if (process.env.NODE_ENV === 'development') {
             console.log('[WelcomeTour] Tour ended:', wasSkipped ? 'skipped' : 'completed');
           }

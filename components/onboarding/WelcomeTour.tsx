@@ -123,9 +123,7 @@ export function WelcomeTour({ run: runProp, onComplete }: WelcomeTourProps) {
             console.log('[WelcomeTour] Tour ended:', wasSkipped ? 'skipped' : 'completed');
           }
         },
-        onCloseClick: () => {
-          driverObj.destroy();
-        },
+
       });
 
       // Start the tour

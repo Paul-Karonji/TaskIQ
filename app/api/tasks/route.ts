@@ -111,7 +111,7 @@ export async function GET(request: NextRequest) {
       page: validatedQuery.page,
       limit: validatedQuery.limit,
       totalPages: Math.ceil(total / validatedQuery.limit),
-    });
+    }, { headers: { 'Cache-Control': 'no-store' } });
   } catch (error: any) {
     console.error('GET /api/tasks error:', error);
 

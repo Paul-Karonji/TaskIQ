@@ -23,7 +23,13 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    return NextResponse.json({ categories });
+    return NextResponse.json({ categories }, {
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+      },
+    });
   } catch (error: any) {
     console.error('Failed to fetch categories:', error);
 
@@ -60,7 +66,14 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       { category, message: 'Category created successfully' },
-      { status: 201 }
+      {
+        status: 201,
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+        },
+      }
     );
   } catch (error: any) {
     console.error('Failed to create category:', error);

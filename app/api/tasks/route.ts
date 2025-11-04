@@ -111,6 +111,12 @@ export async function GET(request: NextRequest) {
       page: validatedQuery.page,
       limit: validatedQuery.limit,
       totalPages: Math.ceil(total / validatedQuery.limit),
+    }, {
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+      },
     });
   } catch (error: any) {
     console.error('GET /api/tasks error:', error);
@@ -199,7 +205,14 @@ export async function POST(request: NextRequest) {
         task,
         message: 'Task created successfully',
       },
-      { status: 201 }
+      {
+        status: 201,
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+        },
+      }
     );
   } catch (error: any) {
     console.error('POST /api/tasks error:', error);

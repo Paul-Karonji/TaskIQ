@@ -23,7 +23,13 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    return NextResponse.json({ tags });
+    return NextResponse.json({ tags }, {
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+      },
+    });
   } catch (error: any) {
     console.error('Failed to fetch tags:', error);
 
@@ -60,7 +66,14 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       { tag, message: 'Tag created successfully' },
-      { status: 201 }
+      {
+        status: 201,
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+        },
+      }
     );
   } catch (error: any) {
     console.error('Failed to create tag:', error);

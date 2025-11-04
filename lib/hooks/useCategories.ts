@@ -12,15 +12,16 @@ interface Category {
 /**
  * Fetch all categories for the authenticated user
  */
-export function useCategories() {
+export function useCategories(userId: string | undefined) {
   return useQuery({
-    queryKey: ['categories'],
+    queryKey: ['categories', userId],
     queryFn: async () => {
       const res = await fetch('/api/categories');
       if (!res.ok) throw new Error('Failed to fetch categories');
       const data = await res.json();
       return data.categories as Category[];
     },
+    enabled: !!userId, // Only run query if userId exists
   });
 }
 

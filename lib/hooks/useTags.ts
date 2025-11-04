@@ -12,15 +12,16 @@ interface Tag {
 /**
  * Fetch all tags for the authenticated user
  */
-export function useTags() {
+export function useTags(userId: string | undefined) {
   return useQuery({
-    queryKey: ['tags'],
+    queryKey: ['tags', userId],
     queryFn: async () => {
       const res = await fetch('/api/tags');
       if (!res.ok) throw new Error('Failed to fetch tags');
       const data = await res.json();
       return data.tags as Tag[];
     },
+    enabled: !!userId, // Only run query if userId exists
   });
 }
 

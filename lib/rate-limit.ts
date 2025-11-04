@@ -145,9 +145,9 @@ export function getRateLimitHeaders(
  * Common rate limit configurations
  */
 export const RATE_LIMITS = {
-  // API endpoints: 100 requests per minute
+  // API endpoints: 500 requests per minute
   API: {
-    limit: 100,
+    limit: 500,
     window: 60 * 1000, // 1 minute
   },
   // Authentication: 5 attempts per 15 minutes

@@ -1,6 +1,5 @@
 // Custom hook for managing user onboarding state
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useCallback } from 'react';
 import { toast } from 'sonner';
 import type { OnboardingStatus, OnboardingUpdateInput } from '@/types';
 
@@ -85,17 +84,7 @@ export function useOnboarding() {
     },
   });
 
-  // Memoize the functions to prevent infinite loops in useEffect dependencies
-  const completeTour = useCallback(
-    (skipped?: boolean) => completeTourMutation.mutate(skipped),
-    [completeTourMutation]
-  );
-
-  const resetOnboarding = useCallback(
-    () => resetOnboardingMutation.mutate(),
-    [resetOnboardingMutation]
-  );
-
+  // Return mutation functions directly - they're already stable from React Query
   return {
     // State
     needsOnboarding: onboardingStatus?.hasCompletedOnboarding === false,
@@ -103,9 +92,9 @@ export function useOnboarding() {
     isLoading,
     error,
 
-    // Actions
-    completeTour,
-    resetOnboarding,
+    // Actions - stable function references that won't cause re-render loops
+    completeTour: (skipped?: boolean) => completeTourMutation.mutate(skipped),
+    resetOnboarding: () => resetOnboardingMutation.mutate(),
 
     // Mutation states
     isCompletingTour: completeTourMutation.isPending,

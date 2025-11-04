@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { QueryProvider } from "@/components/providers/query-provider"
+import { SessionProvider } from "@/components/providers/session-provider"
 import { ThemeProvider } from "@/components/theme/ThemeProvider"
 import { ServiceWorkerProvider } from "@/components/ServiceWorkerProvider"
 import { Toaster } from "sonner"
@@ -32,12 +33,14 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange={false}
         >
-          <ServiceWorkerProvider>
-            <QueryProvider>
-              {children}
-              <Toaster position="top-right" richColors />
-            </QueryProvider>
-          </ServiceWorkerProvider>
+          <SessionProvider>
+            <ServiceWorkerProvider>
+              <QueryProvider>
+                {children}
+                <Toaster position="top-right" richColors />
+              </QueryProvider>
+            </ServiceWorkerProvider>
+          </SessionProvider>
         </ThemeProvider>
         <Analytics />
       </body>

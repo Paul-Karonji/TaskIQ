@@ -103,7 +103,7 @@ export function useDeleteTag() {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tags'] });
+      queryClient.removeQueries({ queryKey: ['tags'] });
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       toast.success('Tag deleted successfully');
     },

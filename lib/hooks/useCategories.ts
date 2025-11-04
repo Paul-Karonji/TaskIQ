@@ -103,7 +103,7 @@ export function useDeleteCategory() {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['categories'] });
+      queryClient.removeQueries({ queryKey: ['categories'] });
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       toast.success('Category deleted successfully');
     },

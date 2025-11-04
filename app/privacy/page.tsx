@@ -3,7 +3,17 @@ import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Privacy Policy | DueSync',
-  description: 'DueSync Privacy Policy - How we collect, use, and protect your data',
+  description: 'DueSync Privacy Policy - Learn how we collect, use, and protect your personal data. We prioritize your privacy and data security.',
+  keywords: ['privacy policy', 'data protection', 'GDPR', 'privacy', 'data security', 'user rights'],
+  openGraph: {
+    title: 'Privacy Policy - DueSync',
+    description: 'Learn how DueSync protects your personal data and respects your privacy rights.',
+    type: 'website',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 }
 
 export default function PrivacyPolicyPage() {

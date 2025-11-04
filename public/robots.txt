@@ -1,0 +1,28 @@
+# Robots.txt for DueSync - Smart Task Management
+# Allow all web crawlers to access the site
+
+User-agent: *
+Allow: /
+
+# Disallow sensitive or private areas
+Disallow: /api/
+Disallow: /admin/
+Disallow: /_next/
+Disallow: /static/
+
+# Allow access to CSS, JS, and image files
+Allow: /_next/static/
+Allow: *.css
+Allow: *.js
+Allow: *.png
+Allow: *.jpg
+Allow: *.jpeg
+Allow: *.gif
+Allow: *.svg
+Allow: *.ico
+
+# Sitemap location
+Sitemap: https://duesync.app/sitemap.xml
+
+# Crawl delay (optional - helps with server load)
+Crawl-delay: 1

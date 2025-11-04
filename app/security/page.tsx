@@ -3,8 +3,18 @@ import Link from 'next/link'
 import { Shield, Lock, Key, Server, Users, AlertTriangle, CheckCircle, FileText } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: 'Security Policy | DueSync',
-  description: 'DueSync Security Policy - How we protect your data and maintain security',
+  title: 'Security & Data Protection | DueSync',
+  description: 'DueSync Security Policy - Learn about our comprehensive security measures, data encryption, and privacy protection standards.',
+  keywords: ['security policy', 'data protection', 'encryption', 'privacy', 'security measures', 'data security'],
+  openGraph: {
+    title: 'Security & Data Protection - DueSync',
+    description: 'Comprehensive security measures and data protection standards at DueSync.',
+    type: 'website',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 }
 
 export default function SecurityPolicyPage() {

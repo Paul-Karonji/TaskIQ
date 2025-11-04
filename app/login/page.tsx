@@ -4,6 +4,22 @@ import { redirect } from "next/navigation"
 import Link from "next/link"
 import { Logo } from "@/components/Logo"
 import { LoginForm } from "@/components/LoginForm"
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Sign In - DueSync",
+  description: "Sign in to DueSync with your Google account to access your smart task management dashboard. Sync with Google Calendar and boost your productivity.",
+  keywords: ["login", "sign in", "authentication", "Google OAuth", "task management"],
+  openGraph: {
+    title: "Sign In - DueSync",
+    description: "Access your smart task management dashboard with Google sign-in.",
+    type: "website",
+  },
+  robots: {
+    index: false, // Don't index login pages
+    follow: false,
+  },
+}
 
 export default async function LoginPage() {
   const session = await auth()

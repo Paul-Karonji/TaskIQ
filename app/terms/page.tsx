@@ -3,7 +3,17 @@ import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Terms of Service | DueSync',
-  description: 'DueSync Terms of Service - Legal agreement for using our service',
+  description: 'DueSync Terms of Service - Legal terms and conditions for using our smart task management platform.',
+  keywords: ['terms of service', 'terms and conditions', 'legal agreement', 'user agreement', 'service terms'],
+  openGraph: {
+    title: 'Terms of Service - DueSync',
+    description: 'Read the legal terms and conditions for using DueSync.',
+    type: 'website',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 }
 
 export default function TermsOfServicePage() {

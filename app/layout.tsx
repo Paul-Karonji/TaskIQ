@@ -14,9 +14,142 @@ const inter = Inter({
   subsets: ["latin"],
 })
 
+// Structured data for SEO
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/#organization`,
+      "name": "DueSync",
+      "url": process.env.NEXTAUTH_URL || 'http://localhost:3000',
+      "logo": {
+        "@type": "ImageObject",
+        "url": `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/logo.png`,
+        "width": 512,
+        "height": 512
+      },
+      "sameAs": [
+        // Add social media URLs here when available
+      ]
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/#softwareapplication`,
+      "name": "DueSync",
+      "description": "Smart task management application with Google Calendar sync, reminders, and productivity features",
+      "url": process.env.NEXTAUTH_URL || 'http://localhost:3000',
+      "applicationCategory": "ProductivityApplication",
+      "operatingSystem": "Web Browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Task Management",
+        "Google Calendar Sync",
+        "Push Notifications",
+        "Priority Management",
+        "Time Tracking",
+        "Focus Mode",
+        "Email Reminders"
+      ],
+      "screenshot": `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/screenshot.png`,
+      "author": {
+        "@id": `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/#organization`
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/#website`,
+      "url": process.env.NEXTAUTH_URL || 'http://localhost:3000',
+      "name": "DueSync - Smart Task Synchronization",
+      "description": "Organize, prioritize, and complete your tasks with ease. Sync with Google Calendar, get reminders, and boost productivity.",
+      "publisher": {
+        "@id": `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/#organization`
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/search?q={search_term_string}`
+        },
+        "query-input": "required name=search_term_string"
+      }
+    }
+  ]
+}
+
 export const metadata: Metadata = {
-  title: "DueSync - Smart Task Synchronization",
-  description: "Organize, prioritize, and complete your tasks with ease",
+  title: {
+    default: "DueSync - Smart Task Synchronization",
+    template: "%s | DueSync"
+  },
+  description: "Organize, prioritize, and complete your tasks with ease. Sync with Google Calendar, get reminders, and boost productivity with DueSync's intelligent task management.",
+  keywords: [
+    "task management",
+    "todo app",
+    "productivity",
+    "Google Calendar sync",
+    "task organizer",
+    "reminders",
+    "time management",
+    "project management",
+    "task tracking",
+    "productivity app"
+  ],
+  authors: [{ name: "DueSync Team" }],
+  creator: "DueSync",
+  publisher: "DueSync",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL(process.env.NEXTAUTH_URL || 'http://localhost:3000'),
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: '/',
+    title: 'DueSync - Smart Task Synchronization',
+    description: 'Organize, prioritize, and complete your tasks with ease. Sync with Google Calendar, get reminders, and boost productivity.',
+    siteName: 'DueSync',
+    images: [
+      {
+        url: '/og-image.png', // We'll need to create this
+        width: 1200,
+        height: 630,
+        alt: 'DueSync - Smart Task Management',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'DueSync - Smart Task Synchronization',
+    description: 'Organize, prioritize, and complete your tasks with ease. Sync with Google Calendar, get reminders, and boost productivity.',
+    images: ['/og-image.png'],
+    creator: '@duesync',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    nocache: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      noimageindex: false,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    google: 'q6BHqeQjZS8_eyoCsgq80OHSMsMgh6W89vFDYippLzI',
+  },
 }
 
 export default function RootLayout({
@@ -43,6 +176,14 @@ export default function RootLayout({
           </SessionProvider>
         </ThemeProvider>
         <Analytics />
+
+        {/* Structured Data for SEO */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(structuredData),
+          }}
+        />
       </body>
     </html>
   )

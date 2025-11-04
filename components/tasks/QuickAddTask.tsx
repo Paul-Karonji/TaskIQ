@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useSession } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Plus, X, Loader2, Repeat } from 'lucide-react';
@@ -32,9 +33,11 @@ export function QuickAddTask({ onTaskCreated, onSubmit }: QuickAddTaskProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
 
-  const { data: categories = [] } = useCategories();
-  const { data: tags = [] } = useTags();
+  const { data: categories = [] } = useCategories(userId);
+  const { data: tags = [] } = useTags(userId);
 
   const {
     register,

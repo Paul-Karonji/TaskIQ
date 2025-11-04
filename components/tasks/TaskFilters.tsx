@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Search, Filter, Tag as TagIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -25,13 +26,15 @@ interface TaskFiltersProps {
 
 export function TaskFilters({ onFiltersChange, initialFilters, isSearchPage = false }: TaskFiltersProps) {
   const router = useRouter();
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
   const [search, setSearch] = useState(initialFilters?.search || '');
   const [status, setStatus] = useState<Status | 'ALL'>(initialFilters?.status || 'ALL');
   const [priority, setPriority] = useState<Priority | 'ALL'>(initialFilters?.priority || 'ALL');
   const [tagId, setTagId] = useState<string | undefined>(initialFilters?.tagId);
 
   // Fetch tags for filtering
-  const { data: tags = [] } = useTags();
+  const { data: tags = [] } = useTags(userId);
 
   // Debounced search handler - redirects to search page if not already there
   useEffect(() => {

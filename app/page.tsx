@@ -3,7 +3,7 @@ import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import { LandingPage } from "@/components/LandingPage"
 import { TaskDashboard } from "@/components/tasks/TaskDashboard"
-// import { WelcomeTour } from "@/components/onboarding/WelcomeTour"
+import { WelcomeTour } from "@/components/onboarding/WelcomeTour"
 import { Logo } from "@/components/Logo"
 import { ThemeToggle } from "@/components/theme/ThemeToggle"
 import Link from "next/link"
@@ -57,11 +57,11 @@ export default async function HomePage() {
         </div>
       </header>
 
-      {/* Main Content - Task Management Dashboard */}
-      <TaskDashboard userId={session.user.id} />
+       {/* Main Content - Task Management Dashboard */}
+       <TaskDashboard userId={session.user.id} />
 
-      {/* Welcome Tour for new users */}
-      {/* <WelcomeTour /> */}
+       {/* Welcome Tour for new users */}
+       <WelcomeTour />
     </div>
   )
 }

@@ -17,7 +17,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { User, Mail, Calendar, Globe, Loader2, PlayCircle } from 'lucide-react';
 import { toast } from 'sonner';
-// import { useOnboarding } from '@/lib/hooks/useOnboarding';
+import { useOnboarding } from '@/lib/hooks/useOnboarding';
 
 interface ProfileSectionProps {
   user: {
@@ -130,7 +130,7 @@ export function ProfileSection({ user }: ProfileSectionProps) {
   const [name, setName] = useState(user.name || '');
   const [timezone, setTimezone] = useState(user.timezone);
   const queryClient = useQueryClient();
-  // const { resetOnboarding, isResettingOnboarding } = useOnboarding();
+  const { resetOnboarding, isResettingOnboarding } = useOnboarding();
 
   const updateProfileMutation = useMutation({
     mutationFn: async (data: { name: string; timezone: string }) => {
@@ -281,7 +281,7 @@ export function ProfileSection({ user }: ProfileSectionProps) {
         <Separator />
 
         {/* Resume Welcome Tour */}
-        {/* <div className="space-y-2">
+        <div className="space-y-2">
           <Label className="flex items-center gap-2">
             <PlayCircle className="h-4 w-4" />
             Welcome Tour
@@ -307,7 +307,7 @@ export function ProfileSection({ user }: ProfileSectionProps) {
               </>
             )}
           </Button>
-        </div> */}
+        </div>
 
         <Separator />
 

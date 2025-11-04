@@ -1,6 +1,6 @@
-/*
 // Custom hook for managing user onboarding state
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useCallback } from 'react';
 import { toast } from 'sonner';
 import type { OnboardingStatus, OnboardingUpdateInput } from '@/types';
 
@@ -85,7 +85,15 @@ export function useOnboarding() {
     },
   });
 
-  // Return mutation functions directly - they're already stable from React Query
+  // Stabilize functions with useCallback to prevent infinite re-renders
+  const completeTour = useCallback((skipped?: boolean) => {
+    completeTourMutation.mutate(skipped);
+  }, [completeTourMutation]);
+
+  const resetOnboarding = useCallback(() => {
+    resetOnboardingMutation.mutate();
+  }, [resetOnboardingMutation]);
+
   return {
     // State
     needsOnboarding: onboardingStatus?.hasCompletedOnboarding === false,
@@ -93,27 +101,12 @@ export function useOnboarding() {
     isLoading,
     error,
 
-    // Actions - stable function references that won't cause re-render loops
-    completeTour: (skipped?: boolean) => completeTourMutation.mutate(skipped),
-    resetOnboarding: () => resetOnboardingMutation.mutate(),
+    // Actions - now stable function references that won't cause re-render loops
+    completeTour,
+    resetOnboarding,
 
     // Mutation states
     isCompletingTour: completeTourMutation.isPending,
     isResettingOnboarding: resetOnboardingMutation.isPending,
-  };
-}
-*/
-
-// useOnboarding hook disabled - commented out
-export function useOnboarding() {
-  return {
-    needsOnboarding: false,
-    onboardingStatus: null,
-    isLoading: false,
-    error: null,
-    completeTour: () => {},
-    resetOnboarding: () => {},
-    isCompletingTour: false,
-    isResettingOnboarding: false,
   };
 }

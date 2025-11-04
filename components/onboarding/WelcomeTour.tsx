@@ -185,6 +185,16 @@ export function WelcomeTour({ run: runProp, onComplete }: WelcomeTourProps) {
             if (process.env.NODE_ENV === 'development') {
               console.log('[WelcomeTour] Tour ended:', wasSkipped ? 'skipped' : 'completed');
             }
+
+            // Destroy the tour overlay immediately
+            driverObj.destroy();
+            driverInstanceRef.current = null;
+
+            // Clean up event listeners
+            if (cleanupRef.current) {
+              cleanupRef.current();
+              cleanupRef.current = null;
+            }
           },
         });
 

@@ -22,6 +22,7 @@ import { PRIORITY_LABELS } from '@/types';
 import { toast } from 'sonner';
 import { useCategories } from '@/lib/hooks/useCategories';
 import { useTags } from '@/lib/hooks/useTags';
+import { useCreateTask } from '@/lib/hooks/useTasks';
 
 interface QuickAddTaskProps {
   userId: string;
@@ -31,9 +32,9 @@ interface QuickAddTaskProps {
 
 export function QuickAddTask({ userId, onTaskCreated, onSubmit }: QuickAddTaskProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
+  const createTask = useCreateTask();
   const { data: categories = [] } = useCategories(userId);
   const { data: tags = [] } = useTags(userId);
 
@@ -61,8 +62,6 @@ export function QuickAddTask({ userId, onTaskCreated, onSubmit }: QuickAddTaskPr
   const recurringPattern = watch('recurringPattern');
 
   const handleFormSubmit = async (data: any) => {
-    setIsSubmitting(true);
-
     try {
       // Include selected tags in the submission
       const taskData = {
@@ -73,17 +72,8 @@ export function QuickAddTask({ userId, onTaskCreated, onSubmit }: QuickAddTaskPr
       if (onSubmit) {
         await onSubmit(taskData);
       } else {
-        // Default submission logic
-        const res = await fetch('/api/tasks', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(taskData),
-        });
-
-        if (!res.ok) {
-          const error = await res.json();
-          throw new Error(error.error || 'Failed to create task');
-        }
+        // Use the mutation hook for task creation
+        await createTask.mutateAsync(taskData);
       }
 
       toast.success('Task created successfully!');
@@ -93,8 +83,6 @@ export function QuickAddTask({ userId, onTaskCreated, onSubmit }: QuickAddTaskPr
       onTaskCreated?.();
     } catch (error: any) {
       toast.error(error.message || 'Failed to create task');
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -321,8 +309,8 @@ export function QuickAddTask({ userId, onTaskCreated, onSubmit }: QuickAddTaskPr
 
         {/* Action Buttons */}
         <div className="flex items-center gap-2 pt-2">
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? (
+          <Button type="submit" disabled={createTask.isPending}>
+            {createTask.isPending ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                 Creating...
@@ -338,7 +326,7 @@ export function QuickAddTask({ userId, onTaskCreated, onSubmit }: QuickAddTaskPr
             type="button"
             variant="outline"
             onClick={handleCancel}
-            disabled={isSubmitting}
+            disabled={createTask.isPending}
           >
             <X className="h-4 w-4 mr-2" />
             Cancel

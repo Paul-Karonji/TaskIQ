@@ -83,16 +83,8 @@ export function TaskDashboard({ userId }: TaskDashboardProps) {
     setFilters(newFilters);
   };
 
-  const handleTaskCreated = () => {
-    refetch();
-  };
-
   const handleEdit = (task: Task) => {
     setEditingTask(task);
-  };
-
-  const handleTaskUpdated = () => {
-    refetch();
   };
 
   const handleTaskClick = (taskId: string) => {
@@ -154,7 +146,7 @@ export function TaskDashboard({ userId }: TaskDashboardProps) {
 
           {/* Quick Add Task */}
           <div className="animate-fade-in" data-tour="quick-add-task">
-            <QuickAddTask userId={userId} onTaskCreated={handleTaskCreated} />
+            <QuickAddTask userId={userId} />
           </div>
 
           {/* Task Stats */}
@@ -237,7 +229,6 @@ export function TaskDashboard({ userId }: TaskDashboardProps) {
           task={editingTask}
           open={!!editingTask}
           onOpenChange={(open) => !open && setEditingTask(null)}
-          onTaskUpdated={handleTaskUpdated}
         />
       </Suspense>
     </main>

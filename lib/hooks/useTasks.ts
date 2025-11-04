@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Task, TaskFilters, CreateTaskInput, UpdateTaskInput } from '@/types';
 
 // Fetch all tasks with filters
-export function useTasks(filters?: TaskFilters) {
+export function useTasks(userId: string | undefined, filters?: TaskFilters) {
   const queryParams = new URLSearchParams();
 
   if (filters?.status && filters.status !== 'ALL') {
@@ -25,7 +25,7 @@ export function useTasks(filters?: TaskFilters) {
   }
 
   return useQuery({
-    queryKey: ['tasks', filters],
+    queryKey: ['tasks', userId, filters],
     queryFn: async () => {
       const res = await fetch(`/api/tasks?${queryParams.toString()}`);
       if (!res.ok) {
@@ -33,13 +33,14 @@ export function useTasks(filters?: TaskFilters) {
       }
       return res.json() as Promise<{ tasks: Task[]; total: number }>;
     },
+    enabled: !!userId, // Only run query if userId exists
   });
 }
 
 // Fetch today's tasks
-export function useTodayTasks() {
+export function useTodayTasks(userId: string | undefined) {
   return useQuery({
-    queryKey: ['tasks', 'today'],
+    queryKey: ['tasks', userId, 'today'],
     queryFn: async () => {
       const res = await fetch('/api/tasks/today');
       if (!res.ok) {
@@ -47,13 +48,14 @@ export function useTodayTasks() {
       }
       return res.json() as Promise<{ tasks: Task[]; total: number }>;
     },
+    enabled: !!userId,
   });
 }
 
 // Fetch a single task
-export function useTask(taskId: string) {
+export function useTask(userId: string | undefined, taskId: string) {
   return useQuery({
-    queryKey: ['tasks', taskId],
+    queryKey: ['tasks', userId, taskId],
     queryFn: async () => {
       const res = await fetch(`/api/tasks/${taskId}`);
       if (!res.ok) {
@@ -61,7 +63,7 @@ export function useTask(taskId: string) {
       }
       return res.json() as Promise<{ task: Task }>;
     },
-    enabled: !!taskId,
+    enabled: !!userId && !!taskId,
   });
 }
 
@@ -198,9 +200,9 @@ export function useToggleTaskComplete() {
 }
 
 // Fetch completed tasks
-export function useCompletedTasks() {
+export function useCompletedTasks(userId: string | undefined) {
   return useQuery({
-    queryKey: ['tasks', 'completed'],
+    queryKey: ['tasks', userId, 'completed'],
     queryFn: async () => {
       const res = await fetch('/api/tasks?status=COMPLETED');
       if (!res.ok) {
@@ -208,13 +210,14 @@ export function useCompletedTasks() {
       }
       return res.json() as Promise<{ tasks: Task[]; total: number }>;
     },
+    enabled: !!userId,
   });
 }
 
 // Fetch HIGH priority tasks for next 7 days
-export function useHighPriorityUpcoming() {
+export function useHighPriorityUpcoming(userId: string | undefined) {
   return useQuery({
-    queryKey: ['tasks', 'high-priority-upcoming'],
+    queryKey: ['tasks', userId, 'high-priority-upcoming'],
     queryFn: async () => {
       const res = await fetch('/api/tasks?priority=HIGH&status=PENDING');
       if (!res.ok) {
@@ -234,13 +237,14 @@ export function useHighPriorityUpcoming() {
 
       return { tasks: filtered, total: filtered.length };
     },
+    enabled: !!userId,
   });
 }
 
 // Fetch next 5 HIGH priority tasks (for priority queue widget)
-export function usePriorityQueue(limit: number = 5) {
+export function usePriorityQueue(userId: string | undefined, limit: number = 5) {
   return useQuery({
-    queryKey: ['tasks', 'priority-queue', limit],
+    queryKey: ['tasks', userId, 'priority-queue', limit],
     queryFn: async () => {
       const res = await fetch('/api/tasks?priority=HIGH&status=PENDING');
       if (!res.ok) {
@@ -253,5 +257,6 @@ export function usePriorityQueue(limit: number = 5) {
 
       return { tasks: limited, total: data.total };
     },
+    enabled: !!userId,
   });
 }

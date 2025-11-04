@@ -19,14 +19,18 @@ const CompletedTasksSection = lazy(() => import('./CompletedTasksSection').then(
 const CategoryManager = lazy(() => import('@/components/categories/CategoryManager').then(m => ({ default: m.CategoryManager })));
 const TagManager = lazy(() => import('@/components/tags/TagManager').then(m => ({ default: m.TagManager })));
 
-export function TaskDashboard() {
+interface TaskDashboardProps {
+  userId: string;
+}
+
+export function TaskDashboard({ userId }: TaskDashboardProps) {
   const [filters, setFilters] = useState<TaskFiltersType>({ status: 'PENDING' });
   const [showCategoryManager, setShowCategoryManager] = useState(false);
   const [showTagManager, setShowTagManager] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
 
   // Use filters directly to allow search across all statuses
-  const { data, isLoading, refetch} = useTasks(filters);
+  const { data, isLoading, refetch} = useTasks(userId, filters);
   const toggleComplete = useToggleTaskComplete();
   const deleteTask = useDeleteTask();
 
@@ -195,6 +199,7 @@ export function TaskDashboard() {
           {/* Completed Tasks Section */}
           <Suspense fallback={<div className="animate-pulse h-24 bg-slate-100 dark:bg-slate-800 rounded-lg" />}>
             <CompletedTasksSection
+              userId={userId}
               onToggleComplete={handleToggleComplete}
               onEdit={handleEdit}
               onDelete={handleDelete}
@@ -206,7 +211,7 @@ export function TaskDashboard() {
         {/* Right Sidebar - Priority Queue Widget */}
         <aside className="lg:col-span-3 hidden lg:block" data-tour="priority-queue">
           <Suspense fallback={<div className="animate-pulse h-64 bg-slate-100 dark:bg-slate-800 rounded-lg" />}>
-            <PriorityQueueWidget limit={5} onTaskClick={handleTaskClick} />
+            <PriorityQueueWidget userId={userId} limit={5} onTaskClick={handleTaskClick} />
           </Suspense>
         </aside>
       </div>

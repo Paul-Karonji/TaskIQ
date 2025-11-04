@@ -54,7 +54,7 @@ export default async function HomePage() {
       </header>
 
       {/* Main Content - Task Management Dashboard */}
-      <TaskDashboard />
+      <TaskDashboard userId={session.user.id} />
 
       {/* Welcome Tour for new users */}
       <WelcomeTour />

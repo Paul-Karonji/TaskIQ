@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense, lazy } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { TaskList } from '@/components/tasks/TaskList';
 import { TaskFilters } from '@/components/tasks/TaskFilters';
 import { useTasks, useToggleTaskComplete, useDeleteTask } from '@/lib/hooks/useTasks';
@@ -27,6 +28,8 @@ export function SearchResults({
 }: SearchResultsProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
 
   // Initialize filters with search query and any URL parameters
   // Note: status defaults to undefined to show ALL statuses in search results
@@ -37,7 +40,7 @@ export function SearchResults({
     categoryId: initialCategoryId,
   });
 
-  const { data, isLoading, refetch } = useTasks(filters);
+  const { data, isLoading, refetch } = useTasks(userId, filters);
   const toggleComplete = useToggleTaskComplete();
   const deleteTask = useDeleteTask();
   const [editingTask, setEditingTask] = useState<Task | null>(null);

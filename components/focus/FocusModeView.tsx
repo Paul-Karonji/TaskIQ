@@ -8,8 +8,12 @@ import { ChevronLeft, ChevronRight, Check, Loader2, CalendarCheck, Target } from
 import { PRIORITY_COLORS, PRIORITY_LABELS } from '@/types';
 import { format } from 'date-fns';
 
-export function FocusModeView() {
-  const { data, isLoading } = useTodayTasks();
+interface FocusModeViewProps {
+  userId: string;
+}
+
+export function FocusModeView({ userId }: FocusModeViewProps) {
+  const { data, isLoading } = useTodayTasks(userId);
   const toggleComplete = useToggleTaskComplete();
   const [currentIndex, setCurrentIndex] = useState(0);
 

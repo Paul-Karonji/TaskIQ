@@ -5,12 +5,13 @@ import { Zap, Calendar, Loader2, Sparkles } from 'lucide-react';
 import { format, differenceInDays, startOfDay, isToday, isTomorrow, isPast } from 'date-fns';
 
 interface PriorityQueueWidgetProps {
+  userId: string;
   limit?: number;
   onTaskClick?: (taskId: string) => void;
 }
 
-export function PriorityQueueWidget({ limit = 5, onTaskClick }: PriorityQueueWidgetProps) {
-  const { data, isLoading } = usePriorityQueue(limit);
+export function PriorityQueueWidget({ userId, limit = 5, onTaskClick }: PriorityQueueWidgetProps) {
+  const { data, isLoading } = usePriorityQueue(userId, limit);
 
   const tasks = data?.tasks || [];
 

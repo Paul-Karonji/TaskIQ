@@ -6,11 +6,12 @@ import { format, differenceInDays, startOfDay, isPast, isToday, isTomorrow } fro
 import { Task } from '@/types';
 
 interface UpcomingHighPrioritySectionProps {
+  userId: string;
   onTaskClick?: (taskId: string) => void;
 }
 
-export function UpcomingHighPrioritySection({ onTaskClick }: UpcomingHighPrioritySectionProps) {
-  const { data, isLoading } = useHighPriorityUpcoming();
+export function UpcomingHighPrioritySection({ userId, onTaskClick }: UpcomingHighPrioritySectionProps) {
+  const { data, isLoading } = useHighPriorityUpcoming(userId);
 
   const tasks = data?.tasks || [];
 

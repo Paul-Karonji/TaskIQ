@@ -8,6 +8,7 @@ import { ChevronDown, ChevronUp, CheckCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface CompletedTasksSectionProps {
+  userId: string;
   onToggleComplete?: (id: string, completed: boolean) => void;
   onEdit?: (task: Task) => void;
   onDelete?: (id: string) => void;
@@ -15,13 +16,14 @@ interface CompletedTasksSectionProps {
 }
 
 export function CompletedTasksSection({
+  userId,
   onToggleComplete,
   onEdit,
   onDelete,
   onArchive,
 }: CompletedTasksSectionProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const { data, isLoading } = useCompletedTasks();
+  const { data, isLoading } = useCompletedTasks(userId);
   const toggleComplete = useToggleTaskComplete();
   const deleteTask = useDeleteTask();
 

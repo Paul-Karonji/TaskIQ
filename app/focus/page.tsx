@@ -36,7 +36,7 @@ export default async function FocusPage() {
       </header>
 
       <main>
-        <FocusModeView />
+        <FocusModeView userId={session.user.id} />
       </main>
     </div>
   );

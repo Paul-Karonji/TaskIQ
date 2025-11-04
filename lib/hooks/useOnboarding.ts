@@ -43,7 +43,7 @@ export function useOnboarding() {
       return res.json();
     },
     onSuccess: (data, skipped) => {
-      queryClient.invalidateQueries({ queryKey: ['onboarding'] });
+      queryClient.invalidateQueries({ queryKey: ['onboarding'], exact: false });
 
       if (skipped) {
         toast.info('You can resume the tour anytime from Settings');
@@ -76,7 +76,7 @@ export function useOnboarding() {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['onboarding'] });
+      queryClient.invalidateQueries({ queryKey: ['onboarding'], exact: false });
       toast.success('Tour restarted! Refresh the page to see it.');
     },
     onError: (error: Error) => {

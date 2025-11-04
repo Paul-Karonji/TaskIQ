@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { TaskList } from '@/components/tasks/TaskList';
 import { TaskFilters } from '@/components/tasks/TaskFilters';
-import { useTasks, useToggleTaskComplete, useDeleteTask } from '@/lib/hooks/useTasks';
+import { useTasks, useToggleTaskComplete, useDeleteTask, useUpdateTask } from '@/lib/hooks/useTasks';
 import { TaskFilters as TaskFiltersType, Task } from '@/types';
 import { toast } from 'sonner';
 import { Loader2, Search } from 'lucide-react';
@@ -40,9 +40,10 @@ export function SearchResults({
     categoryId: initialCategoryId,
   });
 
-  const { data, isLoading, refetch } = useTasks(userId, filters);
+  const { data, isLoading } = useTasks(userId, filters);
   const toggleComplete = useToggleTaskComplete();
   const deleteTask = useDeleteTask();
+  const updateTask = useUpdateTask();
   const [editingTask, setEditingTask] = useState<Task | null>(null);
 
   // Update URL when filters change
@@ -85,16 +86,9 @@ export function SearchResults({
 
     try {
       await toggleComplete.mutateAsync({ id: taskId, completed: false });
-      const response = await fetch(`/api/tasks/${taskId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'ARCHIVED' }),
-      });
-
-      if (!response.ok) throw new Error('Failed to archive task');
+      await updateTask.mutateAsync({ id: taskId, data: { status: 'ARCHIVED' } });
 
       toast.success('Task archived successfully');
-      refetch();
     } catch (error: any) {
       toast.error(error.message || 'Failed to archive task');
     }
@@ -102,10 +96,6 @@ export function SearchResults({
 
   const handleEdit = (task: Task) => {
     setEditingTask(task);
-  };
-
-  const handleTaskUpdated = () => {
-    refetch();
   };
 
   const handleFiltersChange = (newFilters: TaskFiltersType) => {
@@ -226,7 +216,6 @@ export function SearchResults({
           task={editingTask}
           open={!!editingTask}
           onOpenChange={(open) => !open && setEditingTask(null)}
-          onTaskUpdated={handleTaskUpdated}
         />
       </Suspense>
     </div>

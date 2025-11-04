@@ -26,11 +26,10 @@ import { useCreateTask } from '@/lib/hooks/useTasks';
 
 interface QuickAddTaskProps {
   userId: string;
-  onTaskCreated?: () => void;
   onSubmit?: (data: CreateTaskInput) => Promise<void>;
 }
 
-export function QuickAddTask({ userId, onTaskCreated, onSubmit }: QuickAddTaskProps) {
+export function QuickAddTask({ userId, onSubmit }: QuickAddTaskProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
@@ -80,7 +79,6 @@ export function QuickAddTask({ userId, onTaskCreated, onSubmit }: QuickAddTaskPr
       reset();
       setSelectedTags([]);
       setIsExpanded(false);
-      onTaskCreated?.();
     } catch (error: any) {
       toast.error(error.message || 'Failed to create task');
     }

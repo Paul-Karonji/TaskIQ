@@ -4,7 +4,7 @@ import { useState, Suspense, lazy } from 'react';
 import { TaskList } from './TaskList';
 import { TaskFilters } from './TaskFilters';
 import { QuickAddTask } from './QuickAddTask';
-import { useTasks, useToggleTaskComplete, useDeleteTask } from '@/lib/hooks/useTasks';
+import { useTasks, useToggleTaskComplete, useDeleteTask, useUpdateTask } from '@/lib/hooks/useTasks';
 import { TaskFilters as TaskFiltersType, Task } from '@/types';
 import { toast } from 'sonner';
 import { Loader2, Folder, Tag, Target, Archive } from 'lucide-react';
@@ -30,9 +30,10 @@ export function TaskDashboard({ userId }: TaskDashboardProps) {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
 
   // Use filters directly to allow search across all statuses
-  const { data, isLoading, refetch} = useTasks(userId, filters);
+  const { data, isLoading } = useTasks(userId, filters);
   const toggleComplete = useToggleTaskComplete();
   const deleteTask = useDeleteTask();
+  const updateTask = useUpdateTask();
 
   const handleToggleComplete = async (taskId: string, completed: boolean) => {
     try {
@@ -64,16 +65,9 @@ export function TaskDashboard({ userId }: TaskDashboardProps) {
     try {
       await toggleComplete.mutateAsync({ id: taskId, completed: false });
       // Update the task status to ARCHIVED using the update mutation
-      const response = await fetch(`/api/tasks/${taskId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'ARCHIVED' }),
-      });
-
-      if (!response.ok) throw new Error('Failed to archive task');
+      await updateTask.mutateAsync({ id: taskId, data: { status: 'ARCHIVED' } });
 
       toast.success('Task archived successfully');
-      refetch();
     } catch (error: any) {
       toast.error(error.message || 'Failed to archive task');
     }

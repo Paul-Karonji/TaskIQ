@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useTasks, useDeleteTask } from '@/lib/hooks/useTasks';
+import { useTasks, useDeleteTask, useUpdateTask } from '@/lib/hooks/useTasks';
 import { TaskCard } from '@/components/tasks/TaskCard';
 import { Archive, Loader2, Inbox } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -12,8 +12,9 @@ interface ArchiveViewProps {
 }
 
 export function ArchiveView({ userId }: ArchiveViewProps) {
-  const { data, isLoading, refetch } = useTasks(userId, { status: 'ARCHIVED' });
+  const { data, isLoading } = useTasks(userId, { status: 'ARCHIVED' });
   const deleteTask = useDeleteTask();
+  const updateTask = useUpdateTask();
 
   const tasks = data?.tasks || [];
   const total = data?.total || 0;
@@ -33,16 +34,9 @@ export function ArchiveView({ userId }: ArchiveViewProps) {
 
   const handleUnarchive = async (taskId: string) => {
     try {
-      const response = await fetch(`/api/tasks/${taskId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'PENDING' }),
-      });
-
-      if (!response.ok) throw new Error('Failed to unarchive task');
+      await updateTask.mutateAsync({ id: taskId, data: { status: 'PENDING' } });
 
       toast.success('Task restored successfully');
-      refetch();
     } catch (error: any) {
       toast.error(error.message || 'Failed to unarchive task');
     }

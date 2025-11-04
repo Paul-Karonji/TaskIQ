@@ -29,6 +29,7 @@ import { PRIORITY_LABELS, STATUS_LABELS, Task } from '@/types';
 import { toast } from 'sonner';
 import { useCategories } from '@/lib/hooks/useCategories';
 import { useTags } from '@/lib/hooks/useTags';
+import { useUpdateTask } from '@/lib/hooks/useTasks';
 import { format } from 'date-fns';
 
 interface EditTaskDialogProps {
@@ -36,7 +37,6 @@ interface EditTaskDialogProps {
   task: Task | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onTaskUpdated?: () => void;
 }
 
 export function EditTaskDialog({
@@ -44,11 +44,10 @@ export function EditTaskDialog({
   task,
   open,
   onOpenChange,
-  onTaskUpdated,
 }: EditTaskDialogProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
+  const updateTask = useUpdateTask();
   const { data: categories = [] } = useCategories(userId);
   const { data: tags = [] } = useTags(userId);
 
@@ -106,32 +105,18 @@ export function EditTaskDialog({
   const handleFormSubmit = async (data: any) => {
     if (!task) return;
 
-    setIsSubmitting(true);
-
     try {
       const updateData = {
         ...data,
         tagIds: selectedTags.length > 0 ? selectedTags : undefined,
       };
 
-      const res = await fetch(`/api/tasks/${task.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updateData),
-      });
-
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.error || 'Failed to update task');
-      }
+      await updateTask.mutateAsync({ id: task.id, data: updateData });
 
       toast.success('Task updated successfully!');
       onOpenChange(false);
-      onTaskUpdated?.();
     } catch (error: any) {
       toast.error(error.message || 'Failed to update task');
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -368,8 +353,8 @@ export function EditTaskDialog({
 
           {/* Action Buttons */}
           <div className="flex items-center gap-2 pt-4">
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? (
+            <Button type="submit" disabled={updateTask.isPending}>
+              {updateTask.isPending ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                   Saving...
@@ -382,7 +367,7 @@ export function EditTaskDialog({
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              disabled={isSubmitting}
+              disabled={updateTask.isPending}
             >
               Cancel
             </Button>

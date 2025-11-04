@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useSession } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Folder, Trash2, Edit2 } from 'lucide-react';
@@ -20,14 +19,13 @@ import { useCategories, useCreateCategory, useUpdateCategory, useDeleteCategory 
 import { createCategorySchema, type CreateCategoryInput } from '@/lib/validations/category';
 
 interface CategoryManagerProps {
+  userId: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export function CategoryManager({ open, onOpenChange }: CategoryManagerProps) {
+export function CategoryManager({ userId, open, onOpenChange }: CategoryManagerProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
-  const { data: session } = useSession();
-  const userId = session?.user?.id;
 
   const { data: categories = [], isLoading } = useCategories(userId);
   const createMutation = useCreateCategory();

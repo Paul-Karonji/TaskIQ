@@ -219,12 +219,14 @@ export function TaskDashboard({ userId }: TaskDashboardProps) {
       {/* Management Dialogs */}
       <Suspense fallback={null}>
         <CategoryManager
+          userId={userId}
           open={showCategoryManager}
           onOpenChange={setShowCategoryManager}
         />
       </Suspense>
       <Suspense fallback={null}>
         <TagManager
+          userId={userId}
           open={showTagManager}
           onOpenChange={setShowTagManager}
         />

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useSession } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Tag, Trash2, Edit2 } from 'lucide-react';
@@ -20,14 +19,13 @@ import { useTags, useCreateTag, useUpdateTag, useDeleteTag } from '@/lib/hooks/u
 import { createTagSchema, type CreateTagInput } from '@/lib/validations/tag';
 
 interface TagManagerProps {
+  userId: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export function TagManager({ open, onOpenChange }: TagManagerProps) {
+export function TagManager({ userId, open, onOpenChange }: TagManagerProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
-  const { data: session } = useSession();
-  const userId = session?.user?.id;
 
   const { data: tags = [], isLoading } = useTags(userId);
   const createMutation = useCreateTag();

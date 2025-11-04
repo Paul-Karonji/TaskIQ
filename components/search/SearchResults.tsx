@@ -122,6 +122,7 @@ export function SearchResults({
       {/* Filters */}
       <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-6 shadow-sm">
         <TaskFilters
+          userId={userId!}
           onFiltersChange={handleFiltersChange}
           initialFilters={filters}
           isSearchPage={true}
@@ -221,6 +222,7 @@ export function SearchResults({
       {/* Edit Task Dialog */}
       <Suspense fallback={null}>
         <EditTaskDialog
+          userId={userId!}
           task={editingTask}
           open={!!editingTask}
           onOpenChange={(open) => !open && setEditingTask(null)}

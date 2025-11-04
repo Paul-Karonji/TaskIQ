@@ -1,8 +1,7 @@
 'use client';
 
-import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query';
-import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useState } from 'react';
 
 export function QueryProvider({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -18,47 +17,5 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
       })
   );
 
-  return (
-    <QueryClientProvider client={queryClient}>
-      <CacheInvalidator />
-      {children}
-    </QueryClientProvider>
-  );
-}
-
-// Component to handle auth-based cache invalidation
-function CacheInvalidator() {
-  // Only run in browser, not during SSR
-  if (typeof window === 'undefined') {
-    return null;
-  }
-
-  return <CacheInvalidatorClient />;
-}
-
-function CacheInvalidatorClient() {
-  const { data: session, status } = useSession();
-  const queryClient = useQueryClient();
-  const [previousUserId, setPreviousUserId] = useState<string | undefined>();
-
-  useEffect(() => {
-    // Only run when session is loaded (not during SSR or loading)
-    if (status === 'loading') return;
-
-    const currentUserId = session?.user?.id;
-
-    // Clear all queries when user ID changes (sign in/out or account switch)
-    if (currentUserId && currentUserId !== previousUserId) {
-      console.log('User changed, clearing cache:', { previousUserId, currentUserId });
-      queryClient.clear();
-      setPreviousUserId(currentUserId);
-    } else if (!currentUserId && previousUserId) {
-      // User signed out, clear cache
-      console.log('User signed out, clearing cache');
-      queryClient.clear();
-      setPreviousUserId(undefined);
-    }
-  }, [session?.user?.id, status, queryClient, previousUserId]);
-
-  return null;
+  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 }

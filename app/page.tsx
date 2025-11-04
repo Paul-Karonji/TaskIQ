@@ -1,20 +1,24 @@
 // app/page.tsx
-import { auth, signOut } from "@/auth"
+import { auth } from "@/auth"
 import { redirect } from "next/navigation"
+import { LandingPage } from "@/components/LandingPage"
 import { TaskDashboard } from "@/components/tasks/TaskDashboard"
 // import { WelcomeTour } from "@/components/onboarding/WelcomeTour"
 import { Logo } from "@/components/Logo"
 import { ThemeToggle } from "@/components/theme/ThemeToggle"
 import Link from "next/link"
 import { Settings } from "lucide-react"
+import { signOut } from "@/auth"
 
 export default async function HomePage() {
   const session = await auth()
 
+  // Show landing page for non-authenticated users
   if (!session) {
-    redirect("/login")
+    return <LandingPage />
   }
 
+  // Show dashboard for authenticated users
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-slate-900 transition-colors" suppressHydrationWarning>
       {/* Header */}

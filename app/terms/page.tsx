@@ -16,7 +16,7 @@ export default function TermsOfServicePage() {
             href="/"
             className="text-indigo-600 dark:text-indigo-400 hover:underline mb-4 inline-block"
           >
-            ← Back to Dashboard
+            ← Back to DueSync
           </Link>
           <h1 className="text-4xl font-bold text-slate-900 dark:text-slate-100 mb-2">
             Terms of Service

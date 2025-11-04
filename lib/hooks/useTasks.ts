@@ -87,7 +87,7 @@ export function useCreateTask() {
       return res.json() as Promise<{ task: Task }>;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['tasks'], exact: false });
     },
   });
 }
@@ -112,8 +112,8 @@ export function useUpdateTask() {
       return res.json() as Promise<{ task: Task }>;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
-      queryClient.invalidateQueries({ queryKey: ['tasks', variables.id] });
+      queryClient.invalidateQueries({ queryKey: ['tasks'], exact: false });
+      queryClient.invalidateQueries({ queryKey: ['tasks', variables.id], exact: false });
     },
   });
 }
@@ -136,7 +136,7 @@ export function useDeleteTask() {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['tasks'], exact: false });
     },
   });
 }
@@ -164,36 +164,47 @@ export function useToggleTaskComplete() {
       return res.json() as Promise<{ task: Task }>;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
-      queryClient.invalidateQueries({ queryKey: ['tasks', variables.id] });
+      queryClient.invalidateQueries({ queryKey: ['tasks'], exact: false });
+      queryClient.invalidateQueries({ queryKey: ['tasks', variables.id], exact: false });
     },
     onMutate: async ({ id, completed }) => {
-      // Optimistic update
+      // Optimistic update - cancel all task queries
       await queryClient.cancelQueries({ queryKey: ['tasks'] });
 
-      const previousTasks = queryClient.getQueryData(['tasks']);
-
-      queryClient.setQueryData(['tasks'], (old: any) => {
-        if (!old?.tasks) return old;
-        return {
-          ...old,
-          tasks: old.tasks.map((task: Task) =>
-            task.id === id
-              ? {
-                  ...task,
-                  status: completed ? 'COMPLETED' : 'PENDING',
-                  completedAt: completed ? new Date().toISOString() : null,
-                }
-              : task
-          ),
-        };
+      // Store previous data for rollback
+      const previousData = new Map();
+      queryClient.getQueriesData({ queryKey: ['tasks'] }).forEach(([key, data]) => {
+        previousData.set(key, data);
       });
 
-      return { previousTasks };
+      // Update ALL matching task queries (all filters, all users)
+      queryClient.setQueriesData(
+        { queryKey: ['tasks'] },
+        (old: any) => {
+          if (!old?.tasks) return old;
+          return {
+            ...old,
+            tasks: old.tasks.map((task: Task) =>
+              task.id === id
+                ? {
+                    ...task,
+                    status: completed ? 'COMPLETED' : 'PENDING',
+                    completedAt: completed ? new Date().toISOString() : null,
+                  }
+                : task
+            ),
+          };
+        }
+      );
+
+      return { previousData };
     },
     onError: (err, variables, context) => {
-      if (context?.previousTasks) {
-        queryClient.setQueryData(['tasks'], context.previousTasks);
+      // Rollback all queries to previous state
+      if (context?.previousData) {
+        context.previousData.forEach((data, key) => {
+          queryClient.setQueryData(key, data);
+        });
       }
     },
   });

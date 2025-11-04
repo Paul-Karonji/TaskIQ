@@ -45,8 +45,8 @@ export function useCreateCategory() {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['categories'] });
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['categories'], exact: false });
+      queryClient.invalidateQueries({ queryKey: ['tasks'], exact: false });
       toast.success('Category created successfully');
     },
     onError: (error: Error) => {
@@ -75,8 +75,8 @@ export function useUpdateCategory() {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['categories'] });
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['categories'], exact: false });
+      queryClient.invalidateQueries({ queryKey: ['tasks'], exact: false });
       toast.success('Category updated successfully');
     },
     onError: (error: Error) => {
@@ -103,8 +103,8 @@ export function useDeleteCategory() {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.removeQueries({ queryKey: ['categories'] });
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['categories'], exact: false });
+      queryClient.invalidateQueries({ queryKey: ['tasks'], exact: false });
       toast.success('Category deleted successfully');
     },
     onError: (error: Error) => {

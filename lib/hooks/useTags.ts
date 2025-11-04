@@ -45,8 +45,8 @@ export function useCreateTag() {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tags'] });
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['tags'], exact: false });
+      queryClient.invalidateQueries({ queryKey: ['tasks'], exact: false });
       toast.success('Tag created successfully');
     },
     onError: (error: Error) => {
@@ -75,8 +75,8 @@ export function useUpdateTag() {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tags'] });
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['tags'], exact: false });
+      queryClient.invalidateQueries({ queryKey: ['tasks'], exact: false });
       toast.success('Tag updated successfully');
     },
     onError: (error: Error) => {
@@ -103,8 +103,8 @@ export function useDeleteTag() {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.removeQueries({ queryKey: ['tags'] });
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['tags'], exact: false });
+      queryClient.invalidateQueries({ queryKey: ['tasks'], exact: false });
       toast.success('Tag deleted successfully');
     },
     onError: (error: Error) => {

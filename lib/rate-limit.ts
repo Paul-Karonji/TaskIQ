@@ -132,10 +132,11 @@ export async function getRateLimitStatus(
  * Get rate limit headers for HTTP response
  */
 export function getRateLimitHeaders(
-  result: RateLimitResult
+  result: RateLimitResult,
+  limit: number
 ): Record<string, string> {
   return {
-    'X-RateLimit-Limit': result.count.toString(),
+    'X-RateLimit-Limit': limit.toString(),
     'X-RateLimit-Remaining': result.remaining.toString(),
     'X-RateLimit-Reset': new Date(result.resetAt).toISOString(),
   };

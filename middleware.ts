@@ -21,8 +21,12 @@ export async function middleware(request: NextRequest) {
 
   // API routes rate limiting
   if (pathname.startsWith('/api/')) {
-    // Skip rate limiting for health check and metrics
-    if (pathname === '/api/health' || pathname === '/api/metrics') {
+    // Skip rate limiting for health check, metrics, and user profile routes
+    if (
+      pathname === '/api/health' ||
+      pathname === '/api/metrics' ||
+      pathname.startsWith('/api/user/')
+    ) {
       return response
     }
 
@@ -43,7 +47,7 @@ export async function middleware(request: NextRequest) {
     })
 
     // Add rate limit headers
-    const headers = getRateLimitHeaders(rateLimitResult)
+    const headers = getRateLimitHeaders(rateLimitResult, limitConfig.limit)
     Object.entries(headers).forEach(([key, value]) => {
       response.headers.set(key, value)
     })

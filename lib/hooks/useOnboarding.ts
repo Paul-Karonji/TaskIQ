@@ -1,3 +1,4 @@
+/*
 // Custom hook for managing user onboarding state
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -99,5 +100,20 @@ export function useOnboarding() {
     // Mutation states
     isCompletingTour: completeTourMutation.isPending,
     isResettingOnboarding: resetOnboardingMutation.isPending,
+  };
+}
+*/
+
+// useOnboarding hook disabled - commented out
+export function useOnboarding() {
+  return {
+    needsOnboarding: false,
+    onboardingStatus: null,
+    isLoading: false,
+    error: null,
+    completeTour: () => {},
+    resetOnboarding: () => {},
+    isCompletingTour: false,
+    isResettingOnboarding: false,
   };
 }

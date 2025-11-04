@@ -1,5 +1,6 @@
 'use client';
 
+/*
 import { useEffect } from 'react';
 import { driver } from 'driver.js';
 import 'driver.js/dist/driver.css';
@@ -133,5 +134,11 @@ export function WelcomeTour({ run: runProp, onComplete }: WelcomeTourProps) {
   }, [needsOnboarding, isLoading, runProp, completeTour, onComplete]);
 
   // This component doesn't render anything - it just controls the tour
+  return null;
+}
+*/
+
+// Welcome Tour component disabled - commented out
+export function WelcomeTour() {
   return null;
 }

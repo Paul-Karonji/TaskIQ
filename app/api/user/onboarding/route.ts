@@ -1,3 +1,4 @@
+/*
 // API Route: User onboarding status management
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
@@ -112,4 +113,27 @@ export async function PATCH(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+*/
+
+// Onboarding API disabled - commented out
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  return NextResponse.json({
+    hasCompletedOnboarding: true,
+    onboardingCompletedAt: new Date(),
+    onboardingSkipped: false,
+  });
+}
+
+export async function PATCH(request: NextRequest) {
+  return NextResponse.json({
+    success: true,
+    onboarding: {
+      hasCompletedOnboarding: true,
+      onboardingCompletedAt: new Date(),
+      onboardingSkipped: false,
+    },
+  });
 }

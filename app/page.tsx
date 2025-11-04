@@ -2,7 +2,7 @@
 import { auth, signOut } from "@/auth"
 import { redirect } from "next/navigation"
 import { TaskDashboard } from "@/components/tasks/TaskDashboard"
-import { WelcomeTour } from "@/components/onboarding/WelcomeTour"
+// import { WelcomeTour } from "@/components/onboarding/WelcomeTour"
 import { Logo } from "@/components/Logo"
 import { ThemeToggle } from "@/components/theme/ThemeToggle"
 import Link from "next/link"
@@ -57,7 +57,7 @@ export default async function HomePage() {
       <TaskDashboard userId={session.user.id} />
 
       {/* Welcome Tour for new users */}
-      <WelcomeTour />
+      {/* <WelcomeTour /> */}
     </div>
   )
 }

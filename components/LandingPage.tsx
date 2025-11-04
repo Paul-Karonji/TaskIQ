@@ -61,15 +61,17 @@ export function LandingPage() {
                 Get Started Free
               </Button>
             </Link>
-            <Button variant="outline" size="lg" className="w-full sm:w-auto">
-              Learn More
-            </Button>
+            <a href="#features">
+              <Button variant="outline" size="lg" className="w-full sm:w-auto">
+                Learn More
+              </Button>
+            </a>
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-800">
+      <section id="features" className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-800 scroll-mt-16">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white mb-4">
@@ -145,7 +147,7 @@ export function LandingPage() {
       </section>
 
       {/* Google Integration Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
+      <section id="google-integration" className="py-20 px-4 sm:px-6 lg:px-8 scroll-mt-16">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white mb-4">

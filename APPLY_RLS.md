@@ -10,7 +10,7 @@
 
 ### Step 1: Open Supabase SQL Editor
 1. Go to https://supabase.com/dashboard
-2. Select your TaskIQ project
+2. Select your DueSync project
 3. Click "SQL Editor" → "New query"
 
 ### Step 2: Run the Migration

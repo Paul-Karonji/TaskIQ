@@ -1,4 +1,4 @@
-// TypeScript types for TaskIQ
+// TypeScript types for DueSync
 
 import { Priority, Status, RecurringPattern } from '@prisma/client';
 

@@ -16,17 +16,17 @@ test.describe('Authentication', () => {
     await expect(page.getByRole('button', { name: /sign in with google/i })).toBeVisible()
   })
 
-  test('should show TaskIQ logo on login page', async ({ page }) => {
+  test('should show DueSync logo on login page', async ({ page }) => {
     await page.goto('/login')
 
     // Check for logo or app name
-    await expect(page.getByText(/TaskIQ/i)).toBeVisible()
+    await expect(page.getByText(/DueSync/i)).toBeVisible()
   })
 
   test('should have proper page title', async ({ page }) => {
     await page.goto('/login')
 
-    await expect(page).toHaveTitle(/TaskIQ/)
+    await expect(page).toHaveTitle(/DueSync/)
   })
 
   // Note: Actual Google OAuth testing requires additional setup with test accounts

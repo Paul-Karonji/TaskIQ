@@ -1,7 +1,7 @@
 // Service Worker for DueSync
 // Handles push notifications and offline caching
 
-const CACHE_NAME = 'taskiq-v1';
+const CACHE_NAME = 'duesync-v1';
 const TASK_URL_BASE = '/';
 
 // Install event - cache static assets
@@ -50,7 +50,7 @@ self.addEventListener('push', (event) => {
     body: data.body || 'You have a task reminder',
     icon: '/icon-192.png',
     badge: '/badge-72.png',
-    tag: data.taskId || 'taskiq-notification',
+    tag: data.taskId || 'duesync-notification',
     requireInteraction: data.requireInteraction || false,
     data: {
       taskId: data.taskId,

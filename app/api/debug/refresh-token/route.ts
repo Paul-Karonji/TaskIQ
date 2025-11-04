@@ -94,7 +94,7 @@ export async function GET() {
         status: refreshError.status,
         errorData: refreshError.response?.data,
         hint: refreshError.message?.includes('invalid_grant')
-          ? 'Your refresh token is invalid. Go to https://myaccount.google.com/connections and remove TaskIQ, then sign in again.'
+          ? 'Your refresh token is invalid. Go to https://myaccount.google.com/connections and remove DueSync, then sign in again.'
           : 'Check server console for detailed error',
       });
     }

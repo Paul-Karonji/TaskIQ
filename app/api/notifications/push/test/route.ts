@@ -8,7 +8,7 @@ import webpush from 'web-push';
 // Configure web-push with VAPID keys
 const vapidPublicKey = process.env.VAPID_PUBLIC_KEY!;
 const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY!;
-const vapidSubject = process.env.VAPID_SUBJECT || 'mailto:taskiq@example.com';
+const vapidSubject = process.env.VAPID_SUBJECT || 'mailto:infoduesync@wiktechnologies.com';
 
 webpush.setVapidDetails(vapidSubject, vapidPublicKey, vapidPrivateKey);
 

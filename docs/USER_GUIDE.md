@@ -715,13 +715,13 @@ Planned shortcuts:
 
 - **FAQ**: Check our FAQ document for common questions
 - **Security**: Read SECURITY.md for security-related questions
-- **Email Support**: support@taskiq.example.com
+- **Email Support**: infoduesync@wiktechnologies.com
 - **Response Time**: Within 24-48 hours
 
 ### Feature Requests
 
 We'd love to hear your ideas!
-- Email: feedback@taskiq.example.com
+- Email: infoduesync@wiktechnologies.com
 - GitHub Issues: Report bugs or request features
 
 ### Community
@@ -740,4 +740,4 @@ We'd love to hear your ideas!
 
 **Thank you for using DueSync! We hope it helps you stay organized and productive.**
 
-Have feedback? We'd love to hear from you at feedback@taskiq.example.com
+Have feedback? We'd love to hear from you at infoduesync@wiktechnologies.com

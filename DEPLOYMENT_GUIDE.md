@@ -158,7 +158,7 @@ NEXT_PUBLIC_GA_MEASUREMENT_ID="G-XXXXXXXXXX"
 1. Go to [vercel.com](https://vercel.com)
 2. Click "New Project"
 3. Import your GitHub repository
-4. Select the repository: `TaskIQ`
+4. Select the repository: `DueSync`
 
 ### Step 2: Configure Project
 

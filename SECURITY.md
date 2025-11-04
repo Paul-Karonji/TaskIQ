@@ -2,7 +2,7 @@
 
 ## Overview
 
-TaskIQ takes the security of our users' data seriously. This document outlines our security practices, how to report vulnerabilities, and what to expect from the TaskIQ security team.
+DueSync takes the security of our users' data seriously. This document outlines our security practices, how to report vulnerabilities, and what to expect from the DueSync security team.
 
 ## Supported Versions
 
@@ -51,7 +51,7 @@ Permissions-Policy: camera=(), microphone=(), geolocation=()
 
 ## Reporting a Vulnerability
 
-We appreciate the security community's efforts in keeping TaskIQ safe. If you discover a security vulnerability, please follow these guidelines:
+We appreciate the security community's efforts in keeping DueSync safe. If you discover a security vulnerability, please follow these guidelines:
 
 ### Where to Report
 
@@ -101,9 +101,9 @@ We follow a 90-day disclosure timeline:
 
 1. **Strong Passwords**: Use a strong, unique password for your Google account
 2. **Two-Factor Authentication**: Enable 2FA on your Google account
-3. **Verify URLs**: Always verify you're on the correct TaskIQ domain
+3. **Verify URLs**: Always verify you're on the correct DueSync domain
 4. **Logout**: Sign out when using shared computers
-5. **Permissions**: Review Google Calendar permissions granted to TaskIQ
+5. **Permissions**: Review Google Calendar permissions granted to DueSync
 
 ### For Self-Hosted Deployments
 
@@ -144,7 +144,7 @@ npm outdated
 
 ### Known Issues
 
-Check our [GitHub Security Advisories](https://github.com/yourusername/taskiq/security/advisories) for known vulnerabilities and their status.
+Check our [GitHub Security Advisories](https://github.com/yourusername/duesync/security/advisories) for known vulnerabilities and their status.
 
 ## Compliance
 

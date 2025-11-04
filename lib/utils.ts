@@ -1,4 +1,4 @@
-// Utility functions for TaskIQ
+// Utility functions for DueSync
 
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';

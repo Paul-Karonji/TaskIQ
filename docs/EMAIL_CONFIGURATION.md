@@ -42,7 +42,7 @@ GMAIL_APP_PASSWORD="your-16-char-app-password"
 
 **Example:**
 ```env
-GMAIL_USER="taskiq.notifications@gmail.com"
+GMAIL_USER="infoduesync@wiktechnologies.com"
 GMAIL_APP_PASSWORD="abcd efgh ijkl mnop"  # 16-character password from step 2
 ```
 

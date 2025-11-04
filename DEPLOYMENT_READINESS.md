@@ -335,7 +335,7 @@ Copy this checklist before deploying:
 **Production:** `https://your-production-domain.com`
 
 **Examples:**
-- `https://taskiq.vercel.app`
+- `https://duesync.vercel.app`
 - `https://duesync.wiktechnologies.com`
 
 ### 2. GOOGLE_REDIRECT_URI

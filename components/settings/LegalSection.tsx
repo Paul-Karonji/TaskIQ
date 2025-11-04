@@ -39,7 +39,7 @@ export function LegalSection({ user }: LegalSectionProps) {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `taskiq-export-${new Date().toISOString().split('T')[0]}.json`;
+      a.download = `duesync-export-${new Date().toISOString().split('T')[0]}.json`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -345,7 +345,7 @@ export function LegalSection({ user }: LegalSectionProps) {
           <div className="text-center text-sm text-gray-600">
             <p>Have questions about your data or privacy?</p>
             <Link
-              href="mailto:support@taskiq.example.com"
+              href="mailto:infoduesync@wiktechnologies.com"
               className="text-blue-600 hover:text-blue-700 font-medium"
             >
               Contact Support

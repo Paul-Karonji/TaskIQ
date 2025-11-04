@@ -31,7 +31,7 @@
 - Real-time updates with React Query
 
 ### Project Information
-- **Project ID**: taskiq-475306
+- **Project ID**: duesync-475306
 - **Database**: Supabase PostgreSQL
 - **Auth Provider**: Google OAuth (NextAuth v5)
 - **Current Version**: Week 3 (Complete - 100%)
@@ -721,7 +721,7 @@ Button to sync/unsync tasks with Google Calendar.
 ### Initial Setup
 
 1. **Google Cloud Console Configuration:**
-   - Project: DueSync (taskiq-475306)
+   - Project: DueSync (duesync-475306)
    - OAuth 2.0 Client ID created
    - Authorized redirect URIs configured
    - Calendar API enabled
@@ -994,13 +994,13 @@ npm start
 ## Project Credentials
 
 ### Database (Supabase)
-- Project: taskiq-dev
+- Project: duesync-dev
 - URL: https://mxsjkvtwgnosabgxwrsb.supabase.co
 - Region: AWS US East 1
 
 ### Google Cloud
 - Project: DueSync
-- Project ID: taskiq-475306
+- Project ID: duesync-475306
 - OAuth Client configured
 - Calendar API enabled
 

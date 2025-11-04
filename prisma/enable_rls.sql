@@ -1,4 +1,4 @@
--- Enable Row Level Security (RLS) for TaskIQ Database
+-- Enable Row Level Security (RLS) for DueSync Database
 -- This migration enables RLS on all tables and creates appropriate policies
 --
 -- IMPORTANT: This uses a service-role approach where the application bypasses RLS

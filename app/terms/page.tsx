@@ -177,7 +177,7 @@ export default function TermsOfServicePage() {
                 5.1 Your Content
               </h3>
               <p className="text-slate-700 dark:text-slate-300">
-                You retain all rights to the content you create in TaskIQ (tasks, descriptions, etc.).
+                You retain all rights to the content you create in DueSync (tasks, descriptions, etc.).
                 By using the Service, you grant us a limited license to:
               </p>
               <ul className="list-disc pl-6 text-slate-700 dark:text-slate-300 space-y-2">

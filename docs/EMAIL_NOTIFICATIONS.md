@@ -88,7 +88,7 @@ npm install @react-email/components react-email
 ```env
 # .env
 RESEND_API_KEY="re_..."
-EMAIL_FROM="DueSync <notifications@taskiq.com>"
+EMAIL_FROM="DueSync <infoduesync@wiktechnologies.com>"
 ```
 
 ---

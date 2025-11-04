@@ -484,12 +484,12 @@ On our roadmap:
 ### Can I request a feature?
 
 Yes! We'd love to hear your ideas:
-- Email: feedback@taskiq.example.com
+- Email: infoduesync@wiktechnologies.com
 - GitHub Issues: Open a feature request
 
 ### How do I report a bug?
 
-1. **Email**: support@taskiq.example.com
+1. **Email**: infoduesync@wiktechnologies.com
 2. **GitHub**: Open an issue with details
 3. **In-App**: Use the feedback button (coming soon)
 
@@ -508,9 +508,9 @@ DueSync is currently not open source, but we're considering it for the future. F
 
 ### How do I contact support?
 
-- **Email**: support@taskiq.example.com
+- **Email**: infoduesync@wiktechnologies.com
 - **Response Time**: Within 24-48 hours
-- **Security Issues**: security@taskiq.example.com
+- **Security Issues**: infoduesync@wiktechnologies.com
 
 ### Where can I find more documentation?
 
@@ -527,7 +527,7 @@ Coming soon! We're setting up:
 
 ### Can I schedule a demo or training?
 
-For teams or organizations, contact us at enterprise@taskiq.example.com (if applicable).
+For teams or organizations, contact us at infoduesync@wiktechnologies.com (if applicable).
 
 ---
 
@@ -565,6 +565,6 @@ For other errors, contact support with a screenshot.
 
 ---
 
-**Still have questions?** Contact us at support@taskiq.example.com
+**Still have questions?** Contact us at infoduesync@wiktechnologies.com
 
 **Last Updated**: December 2025

@@ -104,7 +104,7 @@ export function TaskDashboard({ userId }: TaskDashboardProps) {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6" suppressHydrationWarning>
         {/* Left Sidebar - Filters */}
         <aside className="lg:col-span-3" data-tour="filters">
-          <TaskFilters onFiltersChange={handleFiltersChange} initialFilters={filters} />
+          <TaskFilters userId={userId} onFiltersChange={handleFiltersChange} initialFilters={filters} />
         </aside>
 
         {/* Main Content - Tasks */}
@@ -154,7 +154,7 @@ export function TaskDashboard({ userId }: TaskDashboardProps) {
 
           {/* Quick Add Task */}
           <div className="animate-fade-in" data-tour="quick-add-task">
-            <QuickAddTask onTaskCreated={handleTaskCreated} />
+            <QuickAddTask userId={userId} onTaskCreated={handleTaskCreated} />
           </div>
 
           {/* Task Stats */}
@@ -231,6 +231,7 @@ export function TaskDashboard({ userId }: TaskDashboardProps) {
       </Suspense>
       <Suspense fallback={null}>
         <EditTaskDialog
+          userId={userId}
           task={editingTask}
           open={!!editingTask}
           onOpenChange={(open) => !open && setEditingTask(null)}

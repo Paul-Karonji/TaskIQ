@@ -15,6 +15,7 @@ export function WelcomeTour({ run: runProp, onComplete }: WelcomeTourProps) {
   const { needsOnboarding, completeTour, isLoading } = useOnboarding();
   const driverInstanceRef = useRef<any>(null);
   const timeoutRef = useRef<NodeJS.Timeout>();
+  const cleanupRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     // Don't run if loading or if explicitly set to not run
@@ -138,8 +139,9 @@ export function WelcomeTour({ run: runProp, onComplete }: WelcomeTourProps) {
           onDeselected: () => {
             if (driverInstanceRef.current) {
               // Call custom cleanup if available
-              if (driverInstanceRef.current._cleanup) {
-                driverInstanceRef.current._cleanup();
+              if (cleanupRef.current) {
+                cleanupRef.current();
+                cleanupRef.current = null;
               }
               driverInstanceRef.current.destroy();
               driverInstanceRef.current = null;
@@ -215,8 +217,8 @@ export function WelcomeTour({ run: runProp, onComplete }: WelcomeTourProps) {
           }
         };
 
-        // Store cleanup function
-        driverObj._cleanup = cleanup;
+        // Store cleanup function in ref
+        cleanupRef.current = cleanup;
 
         // Start the tour
         driverObj.drive();
@@ -234,8 +236,9 @@ export function WelcomeTour({ run: runProp, onComplete }: WelcomeTourProps) {
 
       if (driverInstanceRef.current) {
         // Call custom cleanup if available
-        if (driverInstanceRef.current._cleanup) {
-          driverInstanceRef.current._cleanup();
+        if (cleanupRef.current) {
+          cleanupRef.current();
+          cleanupRef.current = null;
         }
         driverInstanceRef.current.destroy();
         driverInstanceRef.current = null;

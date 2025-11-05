@@ -447,7 +447,15 @@ export default function TermsOfServicePage() {
             </Link>
           </p>
           <p className="text-xs text-slate-500 dark:text-slate-500">
-            Made with care by <span className="font-semibold text-indigo-600 dark:text-indigo-400">WIK Technologies</span>
+            Made with care by{" "}
+            <a
+              href="https://wiktechnology.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
+            >
+              WIK Technologies
+            </a>
           </p>
         </div>
       </div>

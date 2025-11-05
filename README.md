@@ -2,7 +2,7 @@
 
 > **Status:** Production Ready - 100% Complete | **Version:** 1.0.0 | **Last Updated:** November 2, 2025
 >
-> **Made by:** [WIK Technologies](https://wiktechnologies.com)
+> **Made by:** [WIK Technologies](https://wiktechnology.com)
 
 A modern, intelligent task management application built with Next.js 15, React Query, Prisma, and NextAuth. Features Google Calendar sync, email & push notifications, Focus Mode with Pomodoro timer, recurring tasks, categories/tags, interactive onboarding, and archive management.
 
@@ -1162,7 +1162,7 @@ Clean, modern design with dark mode support and smooth animations throughout.
 
 DueSync is proudly developed and maintained by **WIK Technologies** - a software development company committed to creating innovative solutions that enhance productivity and simplify workflows.
 
-Visit us at [wiktechnologies.com](https://wiktechnologies.com)
+Visit us at [wiktechnology.com](https://wiktechnology.com)
 
 ---
 

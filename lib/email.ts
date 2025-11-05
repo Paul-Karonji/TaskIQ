@@ -131,7 +131,7 @@ function generateDailyEmailHTML(
               <a href="${process.env.NEXTAUTH_URL}/settings" style="color: #3B82F6; text-decoration: none;">Update preferences</a>
             </p>
             <p style="margin: 12px 0 0; font-size: 11px; color: #9CA3AF;">
-              Made with care by <span style="font-weight: 600; color: #6B7280;">WIK Technologies</span>
+              Made with care by <a href="https://wiktechnology.com" target="_blank" rel="noopener noreferrer" style="font-weight: 600; color: #6B7280; text-decoration: none;">WIK Technologies</a>
             </p>
           </div>
         </div>
@@ -269,7 +269,7 @@ function generateWeeklyEmailHTML(
               <a href="${process.env.NEXTAUTH_URL}/settings" style="color: #8B5CF6; text-decoration: none;">Update preferences</a>
             </p>
             <p style="margin: 12px 0 0; font-size: 11px; color: #9CA3AF;">
-              Made with care by <span style="font-weight: 600; color: #6B7280;">WIK Technologies</span>
+              Made with care by <a href="https://wiktechnology.com" target="_blank" rel="noopener noreferrer" style="font-weight: 600; color: #6B7280; text-decoration: none;">WIK Technologies</a>
             </p>
           </div>
         </div>
@@ -481,7 +481,7 @@ export async function sendTestEmail(userEmail: string, userName?: string): Promi
             You can now receive daily and weekly task summaries from DueSync.
           </p>
           <p style="margin-top: 20px; font-size: 11px; color: #9CA3AF; text-align: center;">
-            Made with care by <span style="font-weight: 600; color: #6B7280;">WIK Technologies</span>
+            Made with care by <a href="https://wiktechnology.com" target="_blank" rel="noopener noreferrer" style="font-weight: 600; color: #6B7280; text-decoration: none;">WIK Technologies</a>
           </p>
         </div>
       </body>

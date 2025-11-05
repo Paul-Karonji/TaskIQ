@@ -70,7 +70,15 @@ export default async function LoginPage() {
           © 2025 DueSync. All rights reserved.
         </p>
         <p className="mt-2 text-center text-xs text-slate-400 dark:text-slate-600">
-          Made with care by <span className="font-semibold text-indigo-600 dark:text-indigo-400">WIK Technologies</span>
+          Made with care by{" "}
+          <a
+            href="https://wiktechnology.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
+          >
+            WIK Technologies
+          </a>
         </p>
       </footer>
     </div>

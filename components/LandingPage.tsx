@@ -281,7 +281,15 @@ export function LandingPage() {
           <div className="border-t border-slate-200 dark:border-slate-700 mt-8 pt-8 text-center text-sm text-slate-500 dark:text-slate-400 space-y-2">
             <p>&copy; 2025 DueSync. All rights reserved. Built with ❤️ for productivity enthusiasts.</p>
             <p className="text-xs">
-              Made with care by <span className="font-semibold text-indigo-600 dark:text-indigo-400">WIK Technologies</span>
+              Made with care by{" "}
+              <a
+                href="https://wiktechnology.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
+              >
+                WIK Technologies
+              </a>
             </p>
           </div>
         </div>

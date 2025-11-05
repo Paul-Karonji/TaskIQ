@@ -278,8 +278,11 @@ export function LandingPage() {
               </ul>
             </div>
           </div>
-          <div className="border-t border-slate-200 dark:border-slate-700 mt-8 pt-8 text-center text-sm text-slate-500 dark:text-slate-400">
+          <div className="border-t border-slate-200 dark:border-slate-700 mt-8 pt-8 text-center text-sm text-slate-500 dark:text-slate-400 space-y-2">
             <p>&copy; 2025 DueSync. All rights reserved. Built with ❤️ for productivity enthusiasts.</p>
+            <p className="text-xs">
+              Made with care by <span className="font-semibold text-indigo-600 dark:text-indigo-400">WIK Technologies</span>
+            </p>
           </div>
         </div>
       </footer>

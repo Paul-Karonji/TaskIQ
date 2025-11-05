@@ -21,7 +21,7 @@ const structuredData = {
     {
       "@type": "Organization",
       "@id": `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/#organization`,
-      "name": "DueSync",
+      "name": "WIK Technologies",
       "url": process.env.NEXTAUTH_URL || 'http://localhost:3000',
       "logo": {
         "@type": "ImageObject",
@@ -99,9 +99,9 @@ export const metadata: Metadata = {
     "task tracking",
     "productivity app"
   ],
-  authors: [{ name: "DueSync Team" }],
-  creator: "DueSync",
-  publisher: "DueSync",
+  authors: [{ name: "WIK Technologies" }],
+  creator: "WIK Technologies",
+  publisher: "WIK Technologies",
   formatDetection: {
     email: false,
     address: false,

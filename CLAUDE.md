@@ -1,6 +1,8 @@
 # DueSync - Project Documentation for Claude
 
 > Comprehensive documentation for AI assistants and developers working on DueSync
+>
+> **Developed by:** WIK Technologies
 
 ## Table of Contents
 1. [Project Overview](#project-overview)
@@ -31,6 +33,7 @@
 - Real-time updates with React Query
 
 ### Project Information
+- **Developer**: WIK Technologies
 - **Project ID**: duesync-475306
 - **Database**: Supabase PostgreSQL
 - **Auth Provider**: Google OAuth (NextAuth v5)
@@ -1179,8 +1182,23 @@ For issues or questions about this codebase, refer to this document first. It co
 
 ---
 
+## 🏢 About the Developer
+
+**DueSync** is proudly developed and maintained by **WIK Technologies** - a software development company specializing in creating innovative productivity solutions.
+
+For technical support or inquiries:
+- Email: support@wiktechnologies.com
+- Website: [wiktechnologies.com](https://wiktechnologies.com)
+
+---
+
 **Last Updated**: November 2, 2025
 **Current Version**: 1.0.0 (100% Complete - Production Ready)
+**Developer**: WIK Technologies
 **Status**: All features fully implemented and functional. Application is production-ready with Row-Level Security enabled.
 **Optional Enhancements**: Performance optimization (code splitting, lazy loading), advanced recurring patterns, team collaboration features
 **Next Steps**: Deploy to production, gather user feedback, monitor performance and errors
+
+---
+
+*© 2025 WIK Technologies. All rights reserved.*

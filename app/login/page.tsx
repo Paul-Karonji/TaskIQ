@@ -69,6 +69,9 @@ export default async function LoginPage() {
         <p className="mt-4 text-center text-xs text-slate-500 dark:text-slate-500">
           © 2025 DueSync. All rights reserved.
         </p>
+        <p className="mt-2 text-center text-xs text-slate-400 dark:text-slate-600">
+          Made with care by <span className="font-semibold text-indigo-600 dark:text-indigo-400">WIK Technologies</span>
+        </p>
       </footer>
     </div>
   )

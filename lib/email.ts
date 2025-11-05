@@ -130,6 +130,9 @@ function generateDailyEmailHTML(
             <p style="margin: 0;">
               <a href="${process.env.NEXTAUTH_URL}/settings" style="color: #3B82F6; text-decoration: none;">Update preferences</a>
             </p>
+            <p style="margin: 12px 0 0; font-size: 11px; color: #9CA3AF;">
+              Made with care by <span style="font-weight: 600; color: #6B7280;">WIK Technologies</span>
+            </p>
           </div>
         </div>
       </body>
@@ -264,6 +267,9 @@ function generateWeeklyEmailHTML(
             <p style="margin: 0 0 8px;">You're receiving this because you enabled weekly email summaries in DueSync.</p>
             <p style="margin: 0;">
               <a href="${process.env.NEXTAUTH_URL}/settings" style="color: #8B5CF6; text-decoration: none;">Update preferences</a>
+            </p>
+            <p style="margin: 12px 0 0; font-size: 11px; color: #9CA3AF;">
+              Made with care by <span style="font-weight: 600; color: #6B7280;">WIK Technologies</span>
             </p>
           </div>
         </div>
@@ -473,6 +479,9 @@ export async function sendTestEmail(userEmail: string, userName?: string): Promi
           <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
           <p style="font-size: 14px; color: #6b7280;">
             You can now receive daily and weekly task summaries from DueSync.
+          </p>
+          <p style="margin-top: 20px; font-size: 11px; color: #9CA3AF; text-align: center;">
+            Made with care by <span style="font-weight: 600; color: #6B7280;">WIK Technologies</span>
           </p>
         </div>
       </body>

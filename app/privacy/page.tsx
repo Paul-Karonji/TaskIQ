@@ -349,12 +349,15 @@ export default function PrivacyPolicyPage() {
         </div>
 
         {/* Footer */}
-        <div className="mt-8 text-center text-sm text-slate-600 dark:text-slate-400">
+        <div className="mt-8 text-center text-sm text-slate-600 dark:text-slate-400 space-y-2">
           <p>
             By using DueSync, you agree to this Privacy Policy and our{' '}
             <Link href="/terms" className="text-indigo-600 dark:text-indigo-400 hover:underline">
               Terms of Service
             </Link>
+          </p>
+          <p className="text-xs text-slate-500 dark:text-slate-500">
+            Made with care by <span className="font-semibold text-indigo-600 dark:text-indigo-400">WIK Technologies</span>
           </p>
         </div>
       </div>

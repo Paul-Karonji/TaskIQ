@@ -439,12 +439,15 @@ export default function TermsOfServicePage() {
         </div>
 
         {/* Footer */}
-        <div className="mt-8 text-center text-sm text-slate-600 dark:text-slate-400">
+        <div className="mt-8 text-center text-sm text-slate-600 dark:text-slate-400 space-y-2">
           <p>
             By using DueSync, you agree to these Terms and our{' '}
             <Link href="/privacy" className="text-indigo-600 dark:text-indigo-400 hover:underline">
               Privacy Policy
             </Link>
+          </p>
+          <p className="text-xs text-slate-500 dark:text-slate-500">
+            Made with care by <span className="font-semibold text-indigo-600 dark:text-indigo-400">WIK Technologies</span>
           </p>
         </div>
       </div>

@@ -72,7 +72,7 @@ export default async function LoginPage() {
         <p className="mt-2 text-center text-xs text-slate-400 dark:text-slate-600">
           Made with care by{" "}
           <a
-            href="https://wiktechnology.com"
+            href="https://wiktechnologies.com"
             target="_blank"
             rel="noopener noreferrer"
             className="font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"

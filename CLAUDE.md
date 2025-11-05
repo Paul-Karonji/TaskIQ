@@ -1187,8 +1187,8 @@ For issues or questions about this codebase, refer to this document first. It co
 **DueSync** is proudly developed and maintained by **WIK Technologies** - a software development company specializing in creating innovative productivity solutions.
 
 For technical support or inquiries:
-- Email: support@wiktechnology.com
-- Website: [wiktechnology.com](https://wiktechnology.com)
+- Email: support@wiktechnologies.com
+- Website: [wiktechnologies.com](https://wiktechnologies.com)
 
 ---
 

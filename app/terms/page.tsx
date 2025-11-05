@@ -449,7 +449,7 @@ export default function TermsOfServicePage() {
           <p className="text-xs text-slate-500 dark:text-slate-500">
             Made with care by{" "}
             <a
-              href="https://wiktechnology.com"
+              href="https://wiktechnologies.com"
               target="_blank"
               rel="noopener noreferrer"
               className="font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"

@@ -1,3 +1,6 @@
+// Sitemap for DueSync - Smart Task Management
+// Developed by WIK Technologies (https://wiktechnologies.com)
+
 import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {

@@ -283,7 +283,7 @@ export function LandingPage() {
             <p className="text-xs">
               Made with care by{" "}
               <a
-                href="https://wiktechnology.com"
+                href="https://wiktechnologies.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"

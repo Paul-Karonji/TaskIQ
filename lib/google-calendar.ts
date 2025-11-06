@@ -284,33 +284,44 @@ export async function updateCalendarEvent(
  */
 export async function deleteCalendarEvent(userId: string, eventId: string) {
   try {
-    await ensureValidToken(userId);
-    const { calendar } = await getCalendarClient(userId);
+    console.log('🗑️  [DELETE] Starting calendar event deletion:', { userId, eventId });
 
+    await ensureValidToken(userId);
+    console.log('✅ [DELETE] Token validated');
+
+    const { calendar } = await getCalendarClient(userId);
+    console.log('✅ [DELETE] Calendar client obtained');
+
+    console.log('🔄 [DELETE] Calling Google Calendar API to delete event...');
     await calendar.events.delete({
       calendarId: 'primary',
       eventId: eventId,
     });
 
-    console.log('Calendar event deleted successfully:', eventId);
+    console.log('✅ [DELETE] Calendar event deleted successfully:', eventId);
     return true;
   } catch (error: any) {
     // Check both error.code and error.response?.status for Google API errors
     const errorCode = error.code || error.response?.status || error.status;
 
-    console.log('Delete calendar event error:', {
+    console.error('❌ [DELETE] Calendar event deletion error:', {
+      userId,
       eventId,
       errorCode,
       message: error.message,
+      statusText: error.statusText,
+      errors: error.errors,
+      responseData: error.response?.data,
+      stack: error.stack,
     });
 
     // Treat 404 (Not Found) and 410 (Gone) as success - event is already deleted
     if (errorCode === 404 || errorCode === 410) {
-      console.log(`Event ${eventId} not found or already deleted (${errorCode}), treating as success`);
+      console.log(`⚠️  [DELETE] Event ${eventId} not found or already deleted (${errorCode}), treating as success`);
       return true;
     }
 
-    console.error('Failed to delete calendar event:', {
+    console.error('❌ [DELETE] Failed to delete calendar event - throwing error:', {
       eventId,
       error: error.message,
       code: errorCode,

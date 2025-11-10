@@ -8,13 +8,15 @@ interface LogoProps {
   showText?: boolean
   showTagline?: boolean
   theme?: "light" | "dark"
+  className?: string
 }
 
 export function Logo({
   size = "md",
   showText = true,
   showTagline = false,
-  theme = "light"
+  theme = "light",
+  className = ""
 }: LogoProps) {
   const sizes = {
     sm: { icon: 40, text: 22, tagline: 8 },
@@ -27,7 +29,7 @@ export function Logo({
   const taglineSize = sizes[size].tagline
 
   return (
-    <div className="flex items-center gap-6" suppressHydrationWarning>
+    <div className={`flex items-center gap-6 ${className}`} suppressHydrationWarning>
       {/* Neural Icon */}
       <div
         className="relative"

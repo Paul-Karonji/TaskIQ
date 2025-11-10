@@ -86,34 +86,36 @@ export function TaskDashboard({ userId }: TaskDashboardProps) {
   };
 
   return (
-    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6" suppressHydrationWarning>
+    <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6" suppressHydrationWarning>
         {/* Left Sidebar - Filters */}
         <aside className="lg:col-span-3" data-tour="filters">
           <TaskFilters userId={userId} onFiltersChange={handleFiltersChange} initialFilters={filters} />
         </aside>
 
         {/* Main Content - Tasks */}
-        <div className="lg:col-span-6 space-y-6">
+        <div className="lg:col-span-6 space-y-4 sm:space-y-6">
           {/* Management Buttons */}
           <div className="flex gap-2 flex-wrap">
             <Link href="/focus" data-tour="focus-mode">
               <Button
                 size="sm"
-                className="bg-gradient-to-r from-indigo-600 to-blue-500 hover:from-indigo-700 hover:to-blue-600 dark:from-indigo-500 dark:to-blue-400 dark:hover:from-indigo-600 dark:hover:to-blue-500 text-white shadow-sm transition-all"
+                className="bg-gradient-to-r from-indigo-600 to-blue-500 hover:from-indigo-700 hover:to-blue-600 dark:from-indigo-500 dark:to-blue-400 dark:hover:from-indigo-600 dark:hover:to-blue-500 text-white shadow-sm transition-all text-xs sm:text-sm px-2 sm:px-3"
               >
-                <Target className="h-4 w-4 mr-2" />
-                Focus Mode
+                <Target className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                <span className="hidden xs:inline">Focus Mode</span>
+                <span className="xs:hidden">Focus</span>
               </Button>
             </Link>
             <Link href="/archive">
               <Button
                 variant="outline"
                 size="sm"
-                className="border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                className="border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-xs sm:text-sm px-2 sm:px-3"
               >
-                <Archive className="h-4 w-4 mr-2" />
-                View Archive
+                <Archive className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">View Archive</span>
+                <span className="sm:hidden">Archive</span>
               </Button>
             </Link>
             <div data-tour="manage-categories">
@@ -121,20 +123,22 @@ export function TaskDashboard({ userId }: TaskDashboardProps) {
                 variant="outline"
                 size="sm"
                 onClick={() => setShowCategoryManager(true)}
-                className="border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                className="border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-xs sm:text-sm px-2 sm:px-3"
               >
-                <Folder className="h-4 w-4 mr-2" />
-                Manage Categories
+                <Folder className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Manage Categories</span>
+                <span className="sm:hidden">Categories</span>
               </Button>
             </div>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setShowTagManager(true)}
-              className="border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+              className="border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-xs sm:text-sm px-2 sm:px-3"
             >
-              <Tag className="h-4 w-4 mr-2" />
-              Manage Tags
+              <Tag className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Manage Tags</span>
+              <span className="sm:hidden">Tags</span>
             </Button>
           </div>
 

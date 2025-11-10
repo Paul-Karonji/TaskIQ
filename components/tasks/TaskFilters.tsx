@@ -121,7 +121,7 @@ export function TaskFilters({ userId, onFiltersChange, initialFilters, isSearchP
 
         {/* Status Filter */}
         <div>
-          <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="status" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
             Status
           </label>
           <Select value={status} onValueChange={handleStatusChange}>
@@ -139,7 +139,7 @@ export function TaskFilters({ userId, onFiltersChange, initialFilters, isSearchP
 
         {/* Priority Filter */}
         <div>
-          <label htmlFor="priority" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="priority" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
             Priority
           </label>
           <Select value={priority} onValueChange={handlePriorityChange}>
@@ -157,7 +157,7 @@ export function TaskFilters({ userId, onFiltersChange, initialFilters, isSearchP
 
         {/* Tag Filter */}
         <div>
-          <label htmlFor="tag" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="tag" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
             Tag
           </label>
           <Select value={tagId || 'ALL'} onValueChange={handleTagChange}>
@@ -184,8 +184,8 @@ export function TaskFilters({ userId, onFiltersChange, initialFilters, isSearchP
 
       {/* Active filters summary */}
       {hasActiveFilters && (
-        <div className="mt-4 pt-4 border-t border-gray-200">
-          <p className="text-sm text-gray-600">
+        <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+          <p className="text-sm text-slate-600 dark:text-slate-400">
             {search && (
               <span className="inline-flex items-center gap-1">
                 Searching for &quot;<strong>{search}</strong>&quot;

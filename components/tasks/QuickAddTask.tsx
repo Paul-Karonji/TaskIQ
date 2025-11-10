@@ -111,8 +111,8 @@ export function QuickAddTask({ userId, onSubmit }: QuickAddTaskProps) {
 
   // Expanded form state
   return (
-    <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-4 bg-white dark:bg-slate-800 shadow-card dark:shadow-card-dark transition-colors">
-      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
+    <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-3 sm:p-4 bg-white dark:bg-slate-800 shadow-card dark:shadow-card-dark transition-colors">
+      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-3 sm:space-y-4">
         {/* Title */}
         <div>
           <Label htmlFor="title" className="text-slate-700 dark:text-slate-300">

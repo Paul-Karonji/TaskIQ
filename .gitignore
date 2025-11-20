@@ -33,3 +33,30 @@ yarn-error.log*
 # Optional IDE settings
 .vscode/
 .idea/
+*.sublime-project
+*.sublime-workspace
+
+# Testing
+coverage/
+.nyc_output/
+*.lcov
+playwright-report/
+test-results/
+
+# OS files
+Thumbs.db
+.DS_Store
+*.swp
+*.swo
+*~
+
+# TypeScript
+*.tsbuildinfo
+
+# Build info
+.vercel
+.netlify
+
+# Other
+.turbo
+.cache

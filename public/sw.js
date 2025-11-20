@@ -80,6 +80,12 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Skip Vercel Analytics and third-party scripts
+  if (url.pathname.startsWith('/_vercel/') ||
+      url.hostname !== self.location.hostname) {
+    return; // Let browser handle these normally
+  }
+
   // API requests - Network First (with cache fallback)
   if (url.pathname.startsWith('/api/')) {
     event.respondWith(networkFirst(request, RUNTIME_CACHE));

@@ -1,8 +1,10 @@
 'use client';
 
 import { usePriorityQueue } from '@/lib/hooks/useTasks';
+import { useTimezone } from '@/lib/hooks/useTimezone';
 import { Zap, Calendar, Loader2, Sparkles } from 'lucide-react';
 import { format, differenceInDays, startOfDay, isToday, isTomorrow, isPast } from 'date-fns';
+import { toZonedTime } from 'date-fns-tz';
 
 interface PriorityQueueWidgetProps {
   userId: string;
@@ -12,15 +14,21 @@ interface PriorityQueueWidgetProps {
 
 export function PriorityQueueWidget({ userId, limit = 5, onTaskClick }: PriorityQueueWidgetProps) {
   const { data, isLoading } = usePriorityQueue(userId, limit);
+  const { timezone } = useTimezone();
 
   const tasks = data?.tasks || [];
 
   const getUrgencyDot = (dueDate: Date) => {
-    const today = startOfDay(new Date());
-    const due = startOfDay(new Date(dueDate));
+    const now = new Date();
+    const todayInTz = timezone ? toZonedTime(now, timezone) : now;
+    const today = startOfDay(todayInTz);
+
+    const dateInTz = timezone ? toZonedTime(new Date(dueDate), timezone) : new Date(dueDate);
+    const due = startOfDay(dateInTz);
+
     const daysUntil = differenceInDays(due, today);
 
-    if (daysUntil < 0 || isToday(due)) {
+    if (daysUntil < 0 || isToday(dateInTz)) {
       return '🔴'; // Overdue or today - RED
     } else if (daysUntil <= 2) {
       return '🟡'; // 1-2 days - ORANGE
@@ -30,25 +38,27 @@ export function PriorityQueueWidget({ userId, limit = 5, onTaskClick }: Priority
   };
 
   const getRelativeDateShort = (dueDate: Date) => {
-    const date = new Date(dueDate);
+    const dateInTz = timezone ? toZonedTime(new Date(dueDate), timezone) : new Date(dueDate);
+    const now = new Date();
+    const todayInTz = timezone ? toZonedTime(now, timezone) : now;
 
-    if (isPast(date) && !isToday(date)) {
-      const daysAgo = Math.abs(differenceInDays(startOfDay(date), startOfDay(new Date())));
+    if (isPast(dateInTz) && !isToday(dateInTz)) {
+      const daysAgo = Math.abs(differenceInDays(startOfDay(dateInTz), startOfDay(todayInTz)));
       return `${daysAgo}d ago`;
     }
-    if (isToday(date)) {
+    if (isToday(dateInTz)) {
       return 'Today';
     }
-    if (isTomorrow(date)) {
+    if (isTomorrow(dateInTz)) {
       return 'Tomorrow';
     }
 
-    const daysUntil = differenceInDays(startOfDay(date), startOfDay(new Date()));
+    const daysUntil = differenceInDays(startOfDay(dateInTz), startOfDay(todayInTz));
     if (daysUntil <= 7) {
-      return format(date, 'EEEE').slice(0, 3); // Mon, Tue, etc.
+      return format(dateInTz, 'EEEE').slice(0, 3); // Mon, Tue, etc.
     }
 
-    return format(date, 'MMM d');
+    return format(dateInTz, 'MMM d');
   };
 
   return (

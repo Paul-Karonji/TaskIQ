@@ -1,8 +1,10 @@
 'use client';
 
 import { useHighPriorityUpcoming } from '@/lib/hooks/useTasks';
+import { useTimezone } from '@/lib/hooks/useTimezone';
 import { AlertCircle, Calendar, Loader2, PartyPopper } from 'lucide-react';
 import { format, differenceInDays, startOfDay, isPast, isToday, isTomorrow } from 'date-fns';
+import { toZonedTime } from 'date-fns-tz';
 import { Task } from '@/types';
 
 interface UpcomingHighPrioritySectionProps {
@@ -12,15 +14,21 @@ interface UpcomingHighPrioritySectionProps {
 
 export function UpcomingHighPrioritySection({ userId, onTaskClick }: UpcomingHighPrioritySectionProps) {
   const { data, isLoading } = useHighPriorityUpcoming(userId);
+  const { timezone } = useTimezone();
 
   const tasks = data?.tasks || [];
 
   const getUrgencyStyle = (dueDate: Date) => {
-    const today = startOfDay(new Date());
-    const due = startOfDay(new Date(dueDate));
+    const now = new Date();
+    const todayInTz = timezone ? toZonedTime(now, timezone) : now;
+    const today = startOfDay(todayInTz);
+
+    const dateInTz = timezone ? toZonedTime(new Date(dueDate), timezone) : new Date(dueDate);
+    const due = startOfDay(dateInTz);
+
     const daysUntil = differenceInDays(due, today);
 
-    if (daysUntil < 0 || isToday(due)) {
+    if (daysUntil < 0 || isToday(dateInTz)) {
       // Overdue or today - RED
       return {
         border: 'border-l-4 border-red-500',
@@ -48,24 +56,26 @@ export function UpcomingHighPrioritySection({ userId, onTaskClick }: UpcomingHig
   };
 
   const getRelativeDateLabel = (dueDate: Date) => {
-    const date = new Date(dueDate);
+    const dateInTz = timezone ? toZonedTime(new Date(dueDate), timezone) : new Date(dueDate);
+    const now = new Date();
+    const todayInTz = timezone ? toZonedTime(now, timezone) : now;
 
-    if (isPast(date) && !isToday(date)) {
+    if (isPast(dateInTz) && !isToday(dateInTz)) {
       return '🔴 OVERDUE';
     }
-    if (isToday(date)) {
+    if (isToday(dateInTz)) {
       return '🔴 Today';
     }
-    if (isTomorrow(date)) {
+    if (isTomorrow(dateInTz)) {
       return '🟡 Tomorrow';
     }
 
-    const daysUntil = differenceInDays(startOfDay(date), startOfDay(new Date()));
+    const daysUntil = differenceInDays(startOfDay(dateInTz), startOfDay(todayInTz));
     if (daysUntil <= 7) {
-      return `🟢 ${format(date, 'EEEE')}`;
+      return `🟢 ${format(dateInTz, 'EEEE')}`;
     }
 
-    return format(date, 'MMM d');
+    return format(dateInTz, 'MMM d');
   };
 
   if (isLoading) {

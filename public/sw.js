@@ -292,14 +292,127 @@ self.addEventListener('message', (event) => {
   }
 });
 
-// Background sync (optional - for offline task creation)
+// Background sync - for offline task creation
 self.addEventListener('sync', (event) => {
-  console.log('[Service Worker] Background sync:', event.tag);
+  console.log('[Service Worker] Background sync triggered:', event.tag);
 
-  if (event.tag === 'sync-tasks') {
+  if (event.tag === 'sync-offline-tasks') {
     event.waitUntil(
-      // Implement background sync logic here if needed
-      Promise.resolve()
+      syncOfflineTasksToServer()
+        .then((result) => {
+          console.log('[Service Worker] Sync completed:', result);
+          // Notify all clients about sync completion
+          return self.clients.matchAll().then((clients) => {
+            clients.forEach((client) => {
+              client.postMessage({
+                type: 'SYNC_COMPLETE',
+                success: result.success,
+                failed: result.failed,
+              });
+            });
+          });
+        })
+        .catch((error) => {
+          console.error('[Service Worker] Sync failed:', error);
+        })
     );
   }
 });
+
+/**
+ * Sync offline tasks from IndexedDB to server
+ */
+async function syncOfflineTasksToServer() {
+  try {
+    // Open IndexedDB
+    const db = await openOfflineDatabase();
+    const tasks = await getPendingTasksFromDB(db);
+
+    console.log(`[Service Worker] Found ${tasks.length} offline tasks to sync`);
+
+    let success = 0;
+    let failed = 0;
+
+    for (const task of tasks) {
+      try {
+        // Try to sync task to server
+        const response = await fetch('/api/tasks', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            title: task.title,
+            description: task.description,
+            dueDate: task.dueDate,
+            dueTime: task.dueTime,
+            priority: task.priority,
+            categoryId: task.categoryId,
+            estimatedTime: task.estimatedTime,
+            isRecurring: task.isRecurring,
+            recurringPattern: task.recurringPattern,
+          }),
+        });
+
+        if (response.ok) {
+          // Successfully synced - delete from offline storage
+          await deleteTaskFromDB(db, task.id);
+          success++;
+          console.log('[Service Worker] Task synced successfully:', task.id);
+        } else {
+          failed++;
+          console.error('[Service Worker] Task sync failed:', response.status);
+        }
+      } catch (error) {
+        failed++;
+        console.error('[Service Worker] Error syncing task:', error);
+      }
+    }
+
+    db.close();
+    return { success, failed };
+  } catch (error) {
+    console.error('[Service Worker] Sync error:', error);
+    return { success: 0, failed: 0 };
+  }
+}
+
+/**
+ * Open IndexedDB database
+ */
+function openOfflineDatabase() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open('duesync-offline', 1);
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+/**
+ * Get pending tasks from IndexedDB
+ */
+function getPendingTasksFromDB(db) {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(['pending-tasks'], 'readonly');
+    const store = transaction.objectStore('pending-tasks');
+    const index = store.index('syncStatus');
+    const request = index.getAll('pending');
+
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+/**
+ * Delete task from IndexedDB
+ */
+function deleteTaskFromDB(db, taskId) {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(['pending-tasks'], 'readwrite');
+    const store = transaction.objectStore('pending-tasks');
+    const request = store.delete(taskId);
+
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
+  });
+}

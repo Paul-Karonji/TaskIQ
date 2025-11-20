@@ -21,11 +21,19 @@ export async function middleware(request: NextRequest) {
 
   // API routes rate limiting
   if (pathname.startsWith('/api/')) {
-    // Skip rate limiting for health check, metrics, and user profile routes
+    // Skip rate limiting for:
+    // - Health check, metrics
+    // - User profile routes (already authenticated)
+    // - Auth session checks (frequent but harmless)
+    // - NextAuth internal routes
     if (
       pathname === '/api/health' ||
       pathname === '/api/metrics' ||
-      pathname.startsWith('/api/user/')
+      pathname.startsWith('/api/user/') ||
+      pathname === '/api/auth/session' ||
+      pathname === '/api/auth/csrf' ||
+      pathname.startsWith('/api/auth/callback/') ||
+      pathname.startsWith('/api/auth/providers')
     ) {
       return response
     }
@@ -33,7 +41,8 @@ export async function middleware(request: NextRequest) {
     // Different limits for different API routes
     let limitConfig: { limit: number; window: number } = RATE_LIMITS.API
 
-    if (pathname.startsWith('/api/auth/')) {
+    // Only rate limit actual authentication attempts (signin/signout)
+    if (pathname === '/api/auth/signin' || pathname === '/api/auth/signout') {
       limitConfig = RATE_LIMITS.AUTH
     } else if (pathname.startsWith('/api/notifications/push')) {
       limitConfig = RATE_LIMITS.PUSH

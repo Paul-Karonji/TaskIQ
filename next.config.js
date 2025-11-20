@@ -32,15 +32,17 @@ const nextConfig = {
             key: 'Strict-Transport-Security',
             value: 'max-age=31536000; includeSubDomains',
           },
-          // Content Security Policy
+          // Content Security Policy (with PWA support)
           {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
               "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://accounts.google.com https://www.googleapis.com *.vercel.app *.googletagmanager.com *.google-analytics.com",
+              "worker-src 'self' blob:",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com data:",
               "img-src 'self' data: https: blob:",
+              "manifest-src 'self'",
               "connect-src 'self' https://accounts.google.com https://www.googleapis.com https://*.googleapis.com https://*.supabase.co wss://*.supabase.co *.vercel.app *.googletagmanager.com *.google-analytics.com",
               "frame-src 'self' https://accounts.google.com",
               "object-src 'none'",

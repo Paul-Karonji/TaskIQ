@@ -1,29 +1,173 @@
-// Service Worker for DueSync
-// Handles push notifications and offline caching
+// Service Worker for DueSync PWA
+// Handles push notifications, offline caching, and app shell
 
-const CACHE_NAME = 'duesync-v1';
+const CACHE_VERSION = 'v1.0.0';
+const CACHE_NAME = `duesync-${CACHE_VERSION}`;
+const RUNTIME_CACHE = `duesync-runtime-${CACHE_VERSION}`;
+const IMAGE_CACHE = `duesync-images-${CACHE_VERSION}`;
 const TASK_URL_BASE = '/';
+
+// Static assets to cache on install
+// Note: Only cache truly static files here. Pages will be cached on first visit.
+const STATIC_ASSETS = [
+  '/manifest.json',
+  '/icons/icon-192x192.png',
+  '/icons/icon-512x512.png',
+];
 
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
-  console.log('[Service Worker] Installing...');
-  self.skipWaiting();
+  console.log('[Service Worker] Installing version:', CACHE_VERSION);
+
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then((cache) => {
+        console.log('[Service Worker] Caching static assets');
+        // Use addAll for static assets, but don't fail if one asset fails
+        return cache.addAll(STATIC_ASSETS).catch((error) => {
+          console.warn('[Service Worker] Some assets failed to cache:', error);
+          // Continue with installation even if some assets fail
+          return Promise.resolve();
+        });
+      })
+      .then(() => {
+        console.log('[Service Worker] Installation complete');
+        return self.skipWaiting();
+      })
+      .catch((error) => {
+        console.error('[Service Worker] Installation failed:', error);
+      })
+  );
 });
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-  console.log('[Service Worker] Activating...');
+  console.log('[Service Worker] Activating version:', CACHE_VERSION);
+
+  const currentCaches = [CACHE_NAME, RUNTIME_CACHE, IMAGE_CACHE];
+
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames
-          .filter((name) => name !== CACHE_NAME)
-          .map((name) => caches.delete(name))
-      );
-    })
+    caches.keys()
+      .then((cacheNames) => {
+        return Promise.all(
+          cacheNames
+            .filter((name) => !currentCaches.includes(name))
+            .map((name) => {
+              console.log('[Service Worker] Deleting old cache:', name);
+              return caches.delete(name);
+            })
+        );
+      })
+      .then(() => {
+        console.log('[Service Worker] Claiming clients');
+        return self.clients.claim();
+      })
   );
-  return self.clients.claim();
 });
+
+// Fetch event - serve from cache with network fallback
+self.addEventListener('fetch', (event) => {
+  const { request } = event;
+  const url = new URL(request.url);
+
+  // Skip non-GET requests
+  if (request.method !== 'GET') {
+    return;
+  }
+
+  // Skip chrome-extension and other non-http(s) requests
+  if (!request.url.startsWith('http')) {
+    return;
+  }
+
+  // API requests - Network First (with cache fallback)
+  if (url.pathname.startsWith('/api/')) {
+    event.respondWith(networkFirst(request, RUNTIME_CACHE));
+    return;
+  }
+
+  // Images - Cache First (with network fallback)
+  if (request.destination === 'image' || url.pathname.match(/\.(png|jpg|jpeg|svg|gif|webp|ico)$/)) {
+    event.respondWith(cacheFirst(request, IMAGE_CACHE));
+    return;
+  }
+
+  // Static assets - Cache First
+  if (url.pathname.match(/\.(js|css|woff|woff2|ttf|eot)$/) || url.pathname.startsWith('/icons/')) {
+    event.respondWith(cacheFirst(request, CACHE_NAME));
+    return;
+  }
+
+  // HTML pages - Network First (with offline fallback)
+  if (request.headers.get('accept')?.includes('text/html')) {
+    event.respondWith(
+      networkFirst(request, RUNTIME_CACHE)
+        .catch(() => caches.match('/offline'))
+    );
+    return;
+  }
+
+  // Everything else - Stale While Revalidate
+  event.respondWith(staleWhileRevalidate(request, RUNTIME_CACHE));
+});
+
+// Caching Strategies
+
+// Cache First - good for static assets
+async function cacheFirst(request, cacheName) {
+  const cache = await caches.open(cacheName);
+  const cached = await cache.match(request);
+
+  if (cached) {
+    return cached;
+  }
+
+  try {
+    const response = await fetch(request);
+    if (response.ok) {
+      cache.put(request, response.clone());
+    }
+    return response;
+  } catch (error) {
+    console.error('[Service Worker] Fetch failed:', error);
+    throw error;
+  }
+}
+
+// Network First - good for API calls
+async function networkFirst(request, cacheName) {
+  const cache = await caches.open(cacheName);
+
+  try {
+    const response = await fetch(request);
+    if (response.ok) {
+      cache.put(request, response.clone());
+    }
+    return response;
+  } catch (error) {
+    const cached = await cache.match(request);
+    if (cached) {
+      console.log('[Service Worker] Serving from cache:', request.url);
+      return cached;
+    }
+    throw error;
+  }
+}
+
+// Stale While Revalidate - good for frequently changing content
+async function staleWhileRevalidate(request, cacheName) {
+  const cache = await caches.open(cacheName);
+  const cached = await cache.match(request);
+
+  const fetchPromise = fetch(request).then((response) => {
+    if (response.ok) {
+      cache.put(request, response.clone());
+    }
+    return response;
+  });
+
+  return cached || fetchPromise;
+}
 
 // Push event - display notification
 self.addEventListener('push', (event) => {

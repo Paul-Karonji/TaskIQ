@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/components/theme/ThemeProvider"
 import { ServiceWorkerProvider } from "@/components/ServiceWorkerProvider"
 import { Toaster } from "sonner"
 import { Analytics } from "@vercel/analytics/react"
+import { InstallPrompt } from "@/components/pwa/InstallPrompt"
 
 const inter = Inter({
   variable: "--font-inter",
@@ -97,7 +98,9 @@ export const metadata: Metadata = {
     "time management",
     "project management",
     "task tracking",
-    "productivity app"
+    "productivity app",
+    "PWA",
+    "progressive web app"
   ],
   authors: [{ name: "WIK Technologies" }],
   creator: "WIK Technologies",
@@ -110,6 +113,33 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXTAUTH_URL || 'http://localhost:3000'),
   alternates: {
     canonical: '/',
+  },
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'DueSync',
+  },
+  applicationName: 'DueSync',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#10B981' },
+    { media: '(prefers-color-scheme: dark)', color: '#059669' }
+  ],
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 5,
+    userScalable: true,
+  },
+  icons: {
+    icon: [
+      { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/icons/icon-152x152.png', sizes: '152x152', type: 'image/png' },
+      { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+    ],
   },
   openGraph: {
     type: 'website',
@@ -171,6 +201,7 @@ export default function RootLayout({
               <QueryProvider>
                 {children}
                 <Toaster position="top-right" richColors />
+                <InstallPrompt />
               </QueryProvider>
             </ServiceWorkerProvider>
           </SessionProvider>

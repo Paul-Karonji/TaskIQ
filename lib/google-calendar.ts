@@ -1,7 +1,7 @@
 // lib/google-calendar.ts
 import { google } from 'googleapis';
 import { prisma } from '@/lib/prisma';
-import { zonedTimeToUtc, format as formatTz } from 'date-fns-tz';
+import { fromZonedTime, format as formatTz } from 'date-fns-tz';
 import { parseISO } from 'date-fns';
 
 const CALENDAR_API_VERSION = 'v3';
@@ -178,7 +178,7 @@ export async function createCalendarEvent(
 
     // Convert from user's timezone to UTC
     // This ensures that "13:30 in Nairobi" becomes "10:30 UTC" (not "13:30 UTC")
-    const startDateInUserTz = zonedTimeToUtc(dateTimeStr, userTimezone);
+    const startDateInUserTz = fromZonedTime(dateTimeStr, userTimezone);
 
     // Calculate end datetime (use estimated time or default 30 minutes)
     const endDateInUserTz = new Date(startDateInUserTz.getTime() + (task.estimatedTime || 30) * 60000);
@@ -277,7 +277,7 @@ export async function updateCalendarEvent(
     const dateTimeStr = `${dateStr} ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00`;
 
     // Convert from user's timezone to UTC
-    const startDateInUserTz = zonedTimeToUtc(dateTimeStr, userTimezone);
+    const startDateInUserTz = fromZonedTime(dateTimeStr, userTimezone);
 
     // Calculate end datetime (use estimated time or default 30 minutes)
     const endDateInUserTz = new Date(startDateInUserTz.getTime() + (task.estimatedTime || 30) * 60000);

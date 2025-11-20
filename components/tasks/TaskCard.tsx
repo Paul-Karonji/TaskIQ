@@ -25,6 +25,7 @@ import {
 } from '@/lib/utils';
 import { PRIORITY_LABELS } from '@/types';
 import { CalendarSyncButton } from './CalendarSyncButton';
+import { useTimezone } from '@/lib/hooks/useTimezone';
 
 interface TaskCardProps {
   task: Task;
@@ -35,6 +36,7 @@ interface TaskCardProps {
 }
 
 export function TaskCard({ task, onToggleComplete, onEdit, onDelete, onArchive }: TaskCardProps) {
+  const { timezone } = useTimezone();
   const isCompleted = task.status === 'COMPLETED';
   const taskIsOverdue = isOverdue(task.dueDate, task.status);
 
@@ -96,7 +98,7 @@ export function TaskCard({ task, onToggleComplete, onEdit, onDelete, onArchive }
               )}
             >
               <Calendar className="h-4 w-4" />
-              <span>{formatRelativeDate(task.dueDate)}</span>
+              <span>{formatRelativeDate(task.dueDate, timezone)}</span>
               {task.dueTime && (
                 <>
                   <span className="mx-1">•</span>

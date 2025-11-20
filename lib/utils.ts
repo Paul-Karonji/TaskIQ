@@ -3,6 +3,7 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { format, isToday, isTomorrow, isPast, isThisWeek, parseISO, addDays, addWeeks, addMonths } from 'date-fns';
+import { formatInTimeZone, toZonedTime } from 'date-fns-tz';
 import { Priority, Status, RecurringPattern } from '@prisma/client';
 import { PRIORITY_COLORS } from '@/types';
 
@@ -14,32 +15,60 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
- * Format a date for display
+ * Format a date for display (timezone-aware)
+ * @param date - Date to format
+ * @param formatStr - Format string (default: 'MMM d, yyyy')
+ * @param timezone - IANA timezone (default: browser's timezone)
  */
-export function formatDate(date: Date | string, formatStr: string = 'MMM d, yyyy'): string {
+export function formatDate(date: Date | string, formatStr: string = 'MMM d, yyyy', timezone?: string): string {
   const dateObj = typeof date === 'string' ? parseISO(date) : date;
+
+  if (timezone) {
+    return formatInTimeZone(dateObj, timezone, formatStr);
+  }
+
   return format(dateObj, formatStr);
 }
 
 /**
- * Format a date relative to today (Today, Tomorrow, or date)
+ * Format a date relative to today (Today, Tomorrow, or date) - timezone-aware
+ * @param date - Date to format
+ * @param timezone - IANA timezone (default: browser's timezone)
  */
-export function formatRelativeDate(date: Date | string): string {
+export function formatRelativeDate(date: Date | string, timezone?: string): string {
   const dateObj = typeof date === 'string' ? parseISO(date) : date;
+  const zonedDate = timezone ? toZonedTime(dateObj, timezone) : dateObj;
 
-  if (isToday(dateObj)) {
+  if (isToday(zonedDate)) {
     return 'Today';
   }
 
-  if (isTomorrow(dateObj)) {
+  if (isTomorrow(zonedDate)) {
     return 'Tomorrow';
   }
 
-  if (isThisWeek(dateObj)) {
-    return format(dateObj, 'EEEE'); // Day name
+  if (isThisWeek(zonedDate)) {
+    return format(zonedDate, 'EEEE'); // Day name
   }
 
-  return format(dateObj, 'MMM d');
+  return format(zonedDate, 'MMM d');
+}
+
+/**
+ * Format date and time together (timezone-aware)
+ * @param date - Date to format
+ * @param time - Time string (HH:mm)
+ * @param timezone - IANA timezone (default: browser's timezone)
+ */
+export function formatDateTime(date: Date | string, time?: string | null, timezone?: string): string {
+  const dateStr = formatRelativeDate(date, timezone);
+
+  if (time) {
+    const time12 = formatTime12Hour(time);
+    return `${dateStr} at ${time12}`;
+  }
+
+  return dateStr;
 }
 
 /**

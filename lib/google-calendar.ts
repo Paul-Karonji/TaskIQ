@@ -154,6 +154,13 @@ export async function createCalendarEvent(
       throw new Error('Failed to refresh access token. Please sign in again.');
     }
 
+    // Get user's timezone preference
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { timezone: true },
+    });
+    const userTimezone = user?.timezone || 'UTC';
+
     const { calendar } = await getCalendarClient(userId);
 
     // Parse due time or default to 09:00
@@ -167,17 +174,17 @@ export async function createCalendarEvent(
     const endDate = new Date(startDate);
     endDate.setMinutes(endDate.getMinutes() + (task.estimatedTime || 30));
 
-    // Create event
+    // Create event with user's timezone
     const event = {
       summary: task.title,
       description: task.description || undefined,
       start: {
         dateTime: startDate.toISOString(),
-        timeZone: 'UTC',
+        timeZone: userTimezone,
       },
       end: {
         dateTime: endDate.toISOString(),
-        timeZone: 'UTC',
+        timeZone: userTimezone,
       },
       reminders: {
         useDefault: false,
@@ -240,6 +247,14 @@ export async function updateCalendarEvent(
 ) {
   try {
     await ensureValidToken(userId);
+
+    // Get user's timezone preference
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { timezone: true },
+    });
+    const userTimezone = user?.timezone || 'UTC';
+
     const { calendar } = await getCalendarClient(userId);
 
     // Parse due time or default to 09:00
@@ -258,11 +273,11 @@ export async function updateCalendarEvent(
       description: task.description || undefined,
       start: {
         dateTime: startDate.toISOString(),
-        timeZone: 'UTC',
+        timeZone: userTimezone,
       },
       end: {
         dateTime: endDate.toISOString(),
-        timeZone: 'UTC',
+        timeZone: userTimezone,
       },
     };
 

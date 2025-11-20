@@ -1,6 +1,8 @@
 // lib/google-calendar.ts
 import { google } from 'googleapis';
 import { prisma } from '@/lib/prisma';
+import { fromZonedTime, format as formatTz } from 'date-fns-tz';
+import { parseISO } from 'date-fns';
 
 const CALENDAR_API_VERSION = 'v3';
 
@@ -166,24 +168,31 @@ export async function createCalendarEvent(
     // Parse due time or default to 09:00
     const [hours, minutes] = task.dueTime ? task.dueTime.split(':').map(Number) : [9, 0];
 
-    // Create start datetime
-    const startDate = new Date(task.dueDate);
-    startDate.setHours(hours, minutes, 0, 0);
+    // Get the date in YYYY-MM-DD format
+    const dueDate = task.dueDate instanceof Date ? task.dueDate : new Date(task.dueDate);
+    const dateStr = formatTz(dueDate, 'yyyy-MM-dd', { timeZone: 'UTC' });
+
+    // Create a datetime string in the user's timezone
+    // Format: "2025-11-20 13:30:00" - this represents 1:30pm in the user's timezone
+    const dateTimeStr = `${dateStr} ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00`;
+
+    // Convert from user's timezone to UTC
+    // This ensures that "13:30 in Nairobi" becomes "10:30 UTC" (not "13:30 UTC")
+    const startDateInUserTz = fromZonedTime(dateTimeStr, userTimezone);
 
     // Calculate end datetime (use estimated time or default 30 minutes)
-    const endDate = new Date(startDate);
-    endDate.setMinutes(endDate.getMinutes() + (task.estimatedTime || 30));
+    const endDateInUserTz = new Date(startDateInUserTz.getTime() + (task.estimatedTime || 30) * 60000);
 
-    // Create event with user's timezone
+    // Create event - Google Calendar will display these UTC times in the user's local timezone
     const event = {
       summary: task.title,
       description: task.description || undefined,
       start: {
-        dateTime: startDate.toISOString(),
+        dateTime: startDateInUserTz.toISOString(),
         timeZone: userTimezone,
       },
       end: {
-        dateTime: endDate.toISOString(),
+        dateTime: endDateInUserTz.toISOString(),
         timeZone: userTimezone,
       },
       reminders: {
@@ -260,23 +269,28 @@ export async function updateCalendarEvent(
     // Parse due time or default to 09:00
     const [hours, minutes] = task.dueTime ? task.dueTime.split(':').map(Number) : [9, 0];
 
-    // Create start datetime
-    const startDate = new Date(task.dueDate);
-    startDate.setHours(hours, minutes, 0, 0);
+    // Get the date in YYYY-MM-DD format
+    const dueDate = task.dueDate instanceof Date ? task.dueDate : new Date(task.dueDate);
+    const dateStr = formatTz(dueDate, 'yyyy-MM-dd', { timeZone: 'UTC' });
 
-    // Calculate end datetime
-    const endDate = new Date(startDate);
-    endDate.setMinutes(endDate.getMinutes() + (task.estimatedTime || 30));
+    // Create a datetime string in the user's timezone
+    const dateTimeStr = `${dateStr} ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00`;
+
+    // Convert from user's timezone to UTC
+    const startDateInUserTz = fromZonedTime(dateTimeStr, userTimezone);
+
+    // Calculate end datetime (use estimated time or default 30 minutes)
+    const endDateInUserTz = new Date(startDateInUserTz.getTime() + (task.estimatedTime || 30) * 60000);
 
     const event = {
       summary: task.title,
       description: task.description || undefined,
       start: {
-        dateTime: startDate.toISOString(),
+        dateTime: startDateInUserTz.toISOString(),
         timeZone: userTimezone,
       },
       end: {
-        dateTime: endDate.toISOString(),
+        dateTime: endDateInUserTz.toISOString(),
         timeZone: userTimezone,
       },
     };

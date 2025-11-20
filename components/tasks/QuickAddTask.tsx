@@ -64,8 +64,43 @@ export function QuickAddTask({ userId, onSubmit }: QuickAddTaskProps) {
 
   // Detect online/offline status
   useEffect(() => {
-    const updateOnlineStatus = () => {
-      setIsOffline(!navigator.onLine);
+    const updateOnlineStatus = async () => {
+      const wasOffline = isOffline;
+      const isNowOnline = navigator.onLine;
+
+      setIsOffline(!isNowOnline);
+
+      // If we just came back online, trigger manual sync for iOS/Safari
+      if (wasOffline && isNowOnline) {
+        console.log('[Offline] Came back online, triggering sync...');
+
+        // Try background sync first (Android Chrome)
+        if ('serviceWorker' in navigator && 'sync' in ServiceWorkerRegistration.prototype) {
+          try {
+            const registration = await navigator.serviceWorker.ready;
+            await registration.sync.register('sync-offline-tasks');
+            console.log('[Offline] Background sync triggered');
+          } catch (error) {
+            console.error('[Offline] Background sync failed:', error);
+          }
+        } else {
+          // Fallback: Manual sync for iOS/Safari
+          console.log('[Offline] Background Sync not supported, using manual sync');
+          try {
+            const { syncOfflineTasks } = await import('@/lib/offline-storage');
+            const result = await syncOfflineTasks();
+
+            if (result.success > 0) {
+              toast.success(`${result.success} offline task(s) synced!`);
+            }
+            if (result.failed > 0) {
+              toast.error(`${result.failed} task(s) failed to sync`);
+            }
+          } catch (error) {
+            console.error('[Offline] Manual sync failed:', error);
+          }
+        }
+      }
     };
 
     updateOnlineStatus(); // Set initial status
@@ -92,7 +127,7 @@ export function QuickAddTask({ userId, onSubmit }: QuickAddTaskProps) {
       window.removeEventListener('online', updateOnlineStatus);
       window.removeEventListener('offline', updateOnlineStatus);
     };
-  }, []);
+  }, [isOffline]);
 
   const handleFormSubmit = async (data: any) => {
     try {

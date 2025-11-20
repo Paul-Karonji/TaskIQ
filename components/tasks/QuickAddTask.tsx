@@ -78,8 +78,11 @@ export function QuickAddTask({ userId, onSubmit }: QuickAddTaskProps) {
         if ('serviceWorker' in navigator && 'sync' in ServiceWorkerRegistration.prototype) {
           try {
             const registration = await navigator.serviceWorker.ready;
-            await registration.sync.register('sync-offline-tasks');
-            console.log('[Offline] Background sync triggered');
+            // Type assertion for Background Sync API (not in all TypeScript defs)
+            if ('sync' in registration) {
+              await (registration as any).sync.register('sync-offline-tasks');
+              console.log('[Offline] Background sync triggered');
+            }
           } catch (error) {
             console.error('[Offline] Background sync failed:', error);
           }
@@ -160,8 +163,11 @@ export function QuickAddTask({ userId, onSubmit }: QuickAddTaskProps) {
         // Register background sync if supported
         if ('serviceWorker' in navigator && 'sync' in ServiceWorkerRegistration.prototype) {
           const registration = await navigator.serviceWorker.ready;
-          await registration.sync.register('sync-offline-tasks');
-          console.log('[Offline] Background sync registered');
+          // Type assertion for Background Sync API (not in all TypeScript defs)
+          if ('sync' in registration) {
+            await (registration as any).sync.register('sync-offline-tasks');
+            console.log('[Offline] Background sync registered');
+          }
         }
 
         reset();

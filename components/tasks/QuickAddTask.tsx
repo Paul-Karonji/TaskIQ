@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Plus, X, Loader2, Repeat } from 'lucide-react';
+import { Plus, X, Loader2, Repeat, WifiOff, CloudOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -23,6 +23,7 @@ import { toast } from 'sonner';
 import { useCategories } from '@/lib/hooks/useCategories';
 import { useTags } from '@/lib/hooks/useTags';
 import { useCreateTask } from '@/lib/hooks/useTasks';
+import { saveOfflineTask, isOfflineModeSupported } from '@/lib/offline-storage';
 
 interface QuickAddTaskProps {
   userId: string;
@@ -32,6 +33,7 @@ interface QuickAddTaskProps {
 export function QuickAddTask({ userId, onSubmit }: QuickAddTaskProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [isOffline, setIsOffline] = useState(false);
 
   const createTask = useCreateTask();
   const { data: categories = [] } = useCategories(userId);
@@ -60,6 +62,38 @@ export function QuickAddTask({ userId, onSubmit }: QuickAddTaskProps) {
   const isRecurring = watch('isRecurring');
   const recurringPattern = watch('recurringPattern');
 
+  // Detect online/offline status
+  useEffect(() => {
+    const updateOnlineStatus = () => {
+      setIsOffline(!navigator.onLine);
+    };
+
+    updateOnlineStatus(); // Set initial status
+
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+
+    // Listen for sync completion from service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        if (event.data.type === 'SYNC_COMPLETE') {
+          const { success, failed } = event.data;
+          if (success > 0) {
+            toast.success(`${success} offline task(s) synced successfully!`);
+          }
+          if (failed > 0) {
+            toast.error(`${failed} task(s) failed to sync`);
+          }
+        }
+      });
+    }
+
+    return () => {
+      window.removeEventListener('online', updateOnlineStatus);
+      window.removeEventListener('offline', updateOnlineStatus);
+    };
+  }, []);
+
   const handleFormSubmit = async (data: any) => {
     try {
       // Include selected tags in the submission
@@ -68,17 +102,50 @@ export function QuickAddTask({ userId, onSubmit }: QuickAddTaskProps) {
         tagIds: selectedTags.length > 0 ? selectedTags : undefined,
       };
 
-      if (onSubmit) {
-        await onSubmit(taskData);
-      } else {
-        // Use the mutation hook for task creation
-        await createTask.mutateAsync(taskData);
-      }
+      // Check if offline and IndexedDB is supported
+      if (isOffline && isOfflineModeSupported()) {
+        // Save to IndexedDB for later sync
+        const offlineTaskId = await saveOfflineTask({
+          title: taskData.title,
+          description: taskData.description,
+          dueDate: taskData.dueDate,
+          dueTime: taskData.dueTime,
+          priority: taskData.priority,
+          categoryId: taskData.categoryId,
+          estimatedTime: taskData.estimatedTime,
+          isRecurring: taskData.isRecurring,
+          recurringPattern: taskData.recurringPattern,
+        });
 
-      toast.success('Task created successfully!');
-      reset();
-      setSelectedTags([]);
-      setIsExpanded(false);
+        toast.success('Task saved offline! Will sync when online.', {
+          icon: <CloudOff className="w-5 h-5" />,
+          description: 'Your task is stored locally and will sync automatically.',
+        });
+
+        // Register background sync if supported
+        if ('serviceWorker' in navigator && 'sync' in ServiceWorkerRegistration.prototype) {
+          const registration = await navigator.serviceWorker.ready;
+          await registration.sync.register('sync-offline-tasks');
+          console.log('[Offline] Background sync registered');
+        }
+
+        reset();
+        setSelectedTags([]);
+        setIsExpanded(false);
+      } else {
+        // Online - normal submission
+        if (onSubmit) {
+          await onSubmit(taskData);
+        } else {
+          // Use the mutation hook for task creation
+          await createTask.mutateAsync(taskData);
+        }
+
+        toast.success('Task created successfully!');
+        reset();
+        setSelectedTags([]);
+        setIsExpanded(false);
+      }
     } catch (error: any) {
       toast.error(error.message || 'Failed to create task');
     }
@@ -112,6 +179,16 @@ export function QuickAddTask({ userId, onSubmit }: QuickAddTaskProps) {
   // Expanded form state
   return (
     <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-3 sm:p-4 bg-white dark:bg-slate-800 shadow-card dark:shadow-card-dark transition-colors">
+      {/* Offline Indicator */}
+      {isOffline && (
+        <div className="mb-3 flex items-center gap-2 p-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+          <WifiOff className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+          <p className="text-xs sm:text-sm text-amber-800 dark:text-amber-300">
+            You're offline. Task will be saved locally and synced when online.
+          </p>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-3 sm:space-y-4">
         {/* Title */}
         <div>

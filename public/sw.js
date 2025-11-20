@@ -8,9 +8,8 @@ const IMAGE_CACHE = `duesync-images-${CACHE_VERSION}`;
 const TASK_URL_BASE = '/';
 
 // Static assets to cache on install
+// Note: Only cache truly static files here. Pages will be cached on first visit.
 const STATIC_ASSETS = [
-  '/',
-  '/offline',
   '/manifest.json',
   '/icons/icon-192x192.png',
   '/icons/icon-512x512.png',
@@ -24,9 +23,17 @@ self.addEventListener('install', (event) => {
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('[Service Worker] Caching static assets');
-        return cache.addAll(STATIC_ASSETS);
+        // Use addAll for static assets, but don't fail if one asset fails
+        return cache.addAll(STATIC_ASSETS).catch((error) => {
+          console.warn('[Service Worker] Some assets failed to cache:', error);
+          // Continue with installation even if some assets fail
+          return Promise.resolve();
+        });
       })
-      .then(() => self.skipWaiting())
+      .then(() => {
+        console.log('[Service Worker] Installation complete');
+        return self.skipWaiting();
+      })
       .catch((error) => {
         console.error('[Service Worker] Installation failed:', error);
       })

@@ -37,7 +37,6 @@ export function TaskFilters({ userId, onFiltersChange, initialFilters, isSearchP
   // Debounced search handler - redirects to search page if not already there
   useEffect(() => {
     const debouncedUpdate = debounce(() => {
-      console.log('Filters updated:', { search, status, priority, tagId });
       // If user is searching and NOT on search page, redirect to search page
       if (search && !isSearchPage) {
         const params = new URLSearchParams();

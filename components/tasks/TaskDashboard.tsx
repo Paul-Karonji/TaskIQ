@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, Suspense, lazy } from 'react';
+import { useState, useCallback, Suspense, lazy } from 'react';
 import { TaskList } from './TaskList';
 import { TaskFilters } from './TaskFilters';
 import { QuickAddTask } from './QuickAddTask';
@@ -73,9 +73,9 @@ export function TaskDashboard({ userId }: TaskDashboardProps) {
     }
   };
 
-  const handleFiltersChange = (newFilters: TaskFiltersType) => {
+  const handleFiltersChange = useCallback((newFilters: TaskFiltersType) => {
     setFilters(newFilters);
-  };
+  }, []);
 
   const handleEdit = (task: Task) => {
     setEditingTask(task);

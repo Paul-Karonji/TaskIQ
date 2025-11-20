@@ -26,10 +26,12 @@ export async function middleware(request: NextRequest) {
     // - User profile routes (already authenticated)
     // - Auth session checks (frequent but harmless)
     // - NextAuth internal routes
+    // - Tasks API (authenticated + protected by RLS, filters trigger many calls)
     if (
       pathname === '/api/health' ||
       pathname === '/api/metrics' ||
       pathname.startsWith('/api/user/') ||
+      pathname.startsWith('/api/tasks') ||
       pathname === '/api/auth/session' ||
       pathname === '/api/auth/csrf' ||
       pathname.startsWith('/api/auth/callback/') ||
